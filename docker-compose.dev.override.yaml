@@ -1,0 +1,38 @@
+# Local-only overrides for docker-compose.dev.yaml:
+# 1. Host port 5432 is taken by another project's container on this machine,
+#    so Postiz Postgres is exposed on 5433 instead.
+# 2. The Temporal containers have no restart policy and Temporal races its own
+#    Postgres on cold boot (it ran schema setup before the DB accepted
+#    connections and exited). Here they get restart: always and health-checked
+#    depends_on so they come back cleanly in the right order.
+# Usage:
+#   docker compose -f docker-compose.dev.yaml -f docker-compose.dev.override.yaml up -d
+services:
+  postiz-postgres:
+    ports: !override
+      - "5433:5432"
+
+  temporal-postgresql:
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  temporal-elasticsearch:
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 20s
+
+  temporal:
+    restart: always
+    depends_on:
+      temporal-postgresql:
+        condition: service_healthy
+      temporal-elasticsearch:
+        condition: service_healthy
