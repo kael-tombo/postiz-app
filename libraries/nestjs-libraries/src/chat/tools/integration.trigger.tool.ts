@@ -48,7 +48,7 @@ export class IntegrationTriggerTool implements AgentToolInterface {
             key: z.string().describe('Name of the settings key to pass'),
             value: z.string().describe('Value of the key'),
           })
-        ),
+        ).describe('User-provided values the helper needs (for example a search word) - pass [] when the helper needs none'),
       }),
       outputSchema: z.object({
         output: z.union([

@@ -28,8 +28,8 @@ export class VideoFunctionTool implements AgentToolInterface {
         },
       },
       inputSchema: z.object({
-        identifier: z.string(),
-        functionName: z.string(),
+        identifier: z.string().describe('The video generator identifier from generateVideoOptions'),
+        functionName: z.string().describe('The functionName of a helper from the generateVideoOptions tools array - call it to fetch values like voice_id that generateVideoTool needs'),
       }),
       outputSchema: z.object({}).passthrough(),
       execute: async (inputData, context) => {

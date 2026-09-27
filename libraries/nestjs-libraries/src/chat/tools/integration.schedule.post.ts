@@ -18,7 +18,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
 dayjs.extend(utc);
-import { confirmWithUser } from '@gitroom/nestjs-libraries/chat/tools/confirm.elicit';
+import { confirmWithUser, confirmBatchWithUser } from '@gitroom/nestjs-libraries/chat/tools/confirm.elicit';
 
 const validUrlExtension = new ValidUrlExtension();
 const validUrlPath = new ValidUrlPath();
@@ -76,22 +76,28 @@ The tool also asks the user to confirm the batch through the MCP connection (eli
             z.object({
               integrationId: z
                 .string()
-                .describe('The id of the integration (not internal id)'),
+                .describe(
+                  'The "id" field of a channel from the integrationList tool output (not the internalId)'
+                ),
               isPremium: z
                 .boolean()
                 .describe(
-                  "If the integration is X, return if it's premium or not"
+                  "Only relevant for X (Twitter): whether the account is premium (longer posts). Pass false when unsure."
                 ),
-              date: z.string().describe('The date of the post in UTC time'),
+              date: z
+                .string()
+                .describe(
+                  'Publish time in UTC wall time, format YYYY-MM-DDTHH:mm:ss (for example 2026-01-31T14:30:00, no timezone suffix). Get a free slot from the freeDateTime tool when the user did not specify an exact time.'
+                ),
               shortLink: z
                 .boolean()
                 .describe(
-                  'If the post has a link inside, we can ask the user if they want to add a short link'
+                  'If the post contains a link, true lets Postiz shorten it through the organization\'s short-link provider'
                 ),
               type: z
                 .enum(['draft', 'schedule', 'now'])
                 .describe(
-                  'The type of the post, if we pass now, we should pass the current date also'
+                  '"draft" saves the post without queuing it (date may be in the past, nothing publishes), "schedule" queues it for publishing at "date" (must be in the future), "now" publishes immediately (pass the current time as "date")'
                 ),
               postsAndComments: z
                 .array(
@@ -103,11 +109,13 @@ The tool also asks the user to confirm the batch through the MCP connection (eli
                       ),
                     attachments: z
                       .array(attachmentUrl)
-                      .describe('The image of the post (URLS)'),
+                      .describe(
+                        'Media urls for this part (images/videos already in the media library or uploaded) - pass [] for a text-only post'
+                      ),
                   })
                 )
                 .describe(
-                  'first item is the post, every other item is the comments'
+                  'First item is the post text, every additional item is a comment/thread reply on it - a post without comments is a single-item array'
                 ),
               settings: z
                 .array(
@@ -123,11 +131,13 @@ The tool also asks the user to confirm the batch through the MCP connection (eli
                   })
                 )
                 .describe(
-                  'This relies on the integrationSchema tool to get the settings [input:settings]'
+                  'Provider settings as key/value pairs from the integrationSchema tool settings section (for example WordPress needs title/type/status). Pass [] for drafts - drafts skip provider settings validation.'
                 ),
             })
           )
-          .describe('Individual post'),
+          .describe(
+            'One entry per channel+date combination: each object schedules one post on one channel at one time; repeat the same content with different dates (or channel ids) by adding more entries'
+          ),
       }),
       outputSchema: z.object({
         output: z
@@ -137,7 +147,25 @@ The tool also asks the user to confirm the batch through the MCP connection (eli
               integration: z.string(),
             })
           )
-          .or(z.object({ errors: z.string() })),
+          .describe('The posts that were created')
+          .or(
+            z.object({
+              errors: z.string(),
+              created: z
+                .array(
+                  z.object({
+                    postId: z.string(),
+                    integration: z.string(),
+                  })
+                )
+                .optional()
+                .describe('Posts created before the failure, if any'),
+              declined: z
+                .array(z.number().int())
+                .optional()
+                .describe('0-based indices of socialPost entries the user unchecked in the confirmation dialog'),
+            })
+          ),
       }),
       execute: async (inputData, context) => {
         checkAuth(inputData, context);
@@ -274,31 +302,66 @@ The tool also asks the user to confirm the batch through the MCP connection (eli
           }
         }
 
-        // One confirmation for the whole batch, BEFORE any createPost runs:
-        // on the modern elicitation era the tool re-executes from the top when
-        // the answer arrives, so everything after this point must stay
-        // idempotent - "now" posts created here would double-publish.
+        // Confirmation BEFORE any createPost runs: on the modern elicitation
+        // era the tool re-executes from the top when the answer arrives, so
+        // everything after this point must stay idempotent - "now" posts
+        // created here would double-publish. Batches (2+) get ONE dialog
+        // with a checkbox per post so the user can keep a subset; single
+        // posts keep the simple accept/decline dialog.
         const count = inputData.socialPost.length;
         const hasNow = inputData.socialPost.some((p) => p.type === 'now');
         const earliest = inputData.socialPost
           .map((p) => p.date)
           .sort()[0];
-        const confirm = await confirmWithUser(
+        const batchDecision = await confirmBatchWithUser(
           context,
-          hasNow
-            ? `Publish ${count} post(s) immediately to the connected channels?`
-            : `Create ${count} scheduled post(s), earliest at ${earliest} UTC?`
+          inputData.socialPost.map((p) => ({
+            date: p.date,
+            type: p.type,
+            preview: p.postsAndComments?.[0]?.content || '',
+          })),
+          { hasNow }
         );
+        let allowed: boolean[];
+        let confirm: { asked: boolean; confirmed: boolean } | { asked: false };
+        if (batchDecision.asked) {
+          allowed = batchDecision.allowed;
+          confirm = {
+            asked: true,
+            confirmed: allowed.some(Boolean),
+          };
+        } else {
+          const single = await confirmWithUser(
+            context,
+            hasNow
+              ? `Publish ${count} post(s) immediately to the connected channels?`
+              : `Create ${count} scheduled post(s), earliest at ${earliest} UTC?`
+          );
+          allowed = inputData.socialPost.map(() => true);
+          confirm = single;
+        }
         if (confirm.asked && !confirm.confirmed) {
+          const declinedAll = allowed
+            .map((ok, i) => (ok ? -1 : i))
+            .filter((i) => i >= 0);
           return {
             output: {
               errors:
                 'The user declined to create the posts. Nothing was scheduled.',
+              declined: declinedAll.length === count ? undefined : declinedAll,
+              created: [],
             },
           };
         }
 
-        for (const post of inputData.socialPost) {
+        const declinedIndices: number[] = [];
+        for (const [postIndex, post] of inputData.socialPost.entries()) {
+          if (confirm.asked && !allowed[postIndex]) {
+            // User unchecked this post in the batch dialog - skip it and
+            // report the index back to the agent.
+            declinedIndices.push(postIndex);
+            continue;
+          }
           const integration = integrations[post.integrationId];
 
           if (!integration) {
@@ -338,6 +401,18 @@ The tool also asks the user to confirm the batch through the MCP connection (eli
             ],
           }, 'MCP');
           finalOutput.push(...output);
+        }
+
+        if (declinedIndices.length > 0) {
+          // Partial creation: report what was created AND which entries the
+          // user unchecked, so the agent can retry just the declined ones.
+          return {
+            output: {
+              errors: `The user unchecked ${declinedIndices.length} of ${count} posts; the other ${finalOutput.length} were created. Declined socialPost indices: [${declinedIndices.join(', ')}].`,
+              created: finalOutput,
+              declined: declinedIndices,
+            },
+          };
         }
 
         return {

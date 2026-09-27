@@ -34,7 +34,7 @@ export class GenerateImageTool implements AgentToolInterface {
         },
       },
       inputSchema: z.object({
-        prompt: z.string(),
+        prompt: z.string().describe('What the image should show - be specific about subject, style and mood; the url of the generated image is returned'),
       }),
       // Mastra validates the return against this schema, so it must also
       // allow the graceful { error } shape (same as uploadFromUrlTool)

@@ -67,6 +67,135 @@ export type ConfirmDecision =
   | { asked: true; confirmed: true }
   | { asked: true; confirmed: false };
 
+/** Per-post decisions from a batch confirmation form. */
+export type BatchConfirmDecision =
+  | { asked: false; allowed: boolean[] }
+  | { asked: true; allowed: boolean[] };
+
+/**
+ * Above this size the per-post form becomes unusable for a human (26+
+ * checkboxes), so the batch dialog falls back to the simple accept/decline
+ * confirmWithUser dialog.
+ */
+const MAX_BATCH_ITEMS = 25;
+
+/**
+ * Summary line for one post in a batch confirmation form.
+ * Kept terse: it is rendered inside a form the human clicks through.
+ */
+const batchItemLabel = (post: {
+  date: string;
+  type: string;
+  preview: string;
+}): string => {
+  const text = post.preview.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  return `${post.type} @ ${post.date} UTC - ${text.slice(0, 60)}${text.length > 60 ? '...' : ''}`;
+};
+
+/**
+ * Per-post batch confirmation through MCP elicitation (modern era only).
+ *
+ * For 2+ posts the human gets ONE form with a checkbox per post: they can
+ * accept a subset (keep 18 of 20, drop 2) instead of the old all-or-nothing
+ * dialog. The result maps to `allowed[i]` for `posts[i]`; unchecked posts
+ * are never created and the tool reports them as declined. Single posts keep
+ * the simple boolean dialog via confirmWithUser; hosts without elicitation,
+ * legacy-era sessions, MCP_CONFIRM_MODE=off and channel timeouts all fail
+ * OPEN (allowed = all true) exactly like confirmWithUser.
+ *
+ * Replay contract: the answer arrives as { [mastra_elicit_0]: { action,
+ * content: { posts: boolean[] } } }. Unknown/missing shapes decline ALL
+ * (never write on a vague answer) - except the fail-open conditions above.
+ */
+export const confirmBatchWithUser = async (
+  context: any,
+  posts: { date: string; type: string; preview: string }[],
+  options: { hasNow?: boolean } = {}
+): Promise<BatchConfirmDecision> => {
+  const allAllowed = posts.map(() => true);
+  if (CONFIRM_DISABLED || posts.length < 2 || posts.length > MAX_BATCH_ITEMS) {
+    // Single posts and oversized batches are handled by the caller's simple
+    // confirmWithUser dialog instead.
+    return { asked: false, allowed: allAllowed };
+  }
+
+  const message = options.hasNow
+    ? `Publish ${posts.length} posts immediately? Uncheck any you do not want.`
+    : `Schedule ${posts.length} posts? Uncheck any you do not want.`;
+
+  try {
+    const extra: any = context?.mcp?.extra;
+    const envelope: any = extra?.mcpReq?.envelope;
+    if (!envelope || typeof envelope !== 'object') {
+      return { asked: false, allowed: allAllowed };
+    }
+    if (envelope[PROTOCOL_VERSION_META_KEY] !== MODERN_ERA) {
+      return { asked: false, allowed: allAllowed };
+    }
+    const caps = envelope[CLIENT_CAPABILITIES_META_KEY];
+    if (!caps || typeof caps !== 'object' || !caps.elicitation) {
+      return { asked: false, allowed: allAllowed };
+    }
+
+    const postProperties: Record<string, any> = {};
+    for (const [i, post] of posts.entries()) {
+      postProperties[`post_${i}`] = {
+        type: 'boolean',
+        title: `Post ${i + 1} of ${posts.length}`,
+        description: batchItemLabel(post),
+        default: true,
+      };
+    }
+
+    let timeoutTimer: any;
+    const result: any = await Promise.race([
+      context.mcp.elicitation.sendRequest({
+        mode: 'form',
+        message,
+        requestedSchema: {
+          type: 'object',
+          properties: postProperties,
+          required: Object.keys(postProperties),
+        },
+      }),
+      // Same hang valve as confirmWithUser: an unwired replay channel must
+      // degrade to fail-open, never hang the write tool.
+      new Promise<never>((_, reject) => {
+        timeoutTimer = setTimeout(
+          () =>
+            reject(
+              Object.assign(new Error('batch elicitation timed out'), {
+                name: 'ElicitationTimeout',
+              })
+            ),
+          CONFIRM_TIMEOUT_MS
+        );
+      }),
+    ]).finally(() => clearTimeout(timeoutTimer));
+
+    const action = String(result?.action || '').toLowerCase();
+    if (!ACCEPT_ACTIONS.has(action)) {
+      // Decline / cancel / unknown shape -> nothing is created.
+      return { asked: true, allowed: posts.map(() => false) };
+    }
+    const answers: any[] = Array.isArray(result?.content?.posts)
+      ? result.content.posts
+      : [];
+    return {
+      asked: true,
+      allowed: posts.map((_, i) => answers[i] !== false),
+    };
+  } catch (err: any) {
+    if (err?.name === 'ElicitationReplayInterrupt') {
+      throw err;
+    }
+    new Logger('McpConfirm').warn(
+      `Batch confirmation elicitation failed (${err?.message || err}) - proceeding without confirmation`
+    );
+    return { asked: false, allowed: allAllowed };
+  }
+};
+
 /**
  * Best-effort confirmation through MCP elicitation.
  * Never throws; returns whether the action may proceed.

@@ -47,14 +47,18 @@ export class GenerateVideoTool implements AgentToolInterface {
                       .join('\n')}
       `,
       inputSchema: z.object({
-        identifier: z.string(),
-        output: z.enum(['vertical', 'horizontal']),
-        customParams: z.array(
-          z.object({
-            key: z.string().describe('Name of the settings key to pass'),
-            value: z.any().describe('Value of the key'),
-          })
-        ),
+        identifier: z.string().describe('The video generator identifier from the generateVideoOptions tool'),
+        output: z.enum(['vertical', 'horizontal']).describe('Video orientation - vertical for reels/shorts, horizontal for standard videos'),
+        customParams: z
+          .array(
+            z.object({
+              key: z.string().describe('Name of the settings key to pass'),
+              value: z.any().describe('Value of the key'),
+            })
+          )
+          .describe(
+            'Generator-specific parameters the generateVideoOptions tools array listed for this identifier (for example voice_id) - pass [] when the generator needs none'
+          ),
       }),
       outputSchema: z.object({
         jobId: z.string().optional(),
