@@ -398,6 +398,68 @@ Note: `getPosts` still returns root rows only (comments are child rows) —
   rate+paginate 18/18, oauth 22/22, feature 57/57, lifecycle 16/16,
   free-date regression green.
 
+### F19. Twelfth-pass: agent-guidance audit — the catalog as documentation (2026-09-27)
+- **Premise**: an agent has no code access — the tool catalog (descriptions +
+  schema `describe()` strings) is its entire documentation. The loop suite
+  (F18) showed where first-try args went wrong; this round audited every
+  tool's teaching strings against those failure points and fixed the gaps.
+- **Fixed (library changes, all verified in the live catalog)**:
+  - `integrationSchedulePostTool` (highest-traffic write): `socialPost` now
+    explains one-entry-per-channel+date; `integrationId` names integrationList
+    as the id source; `date` carries the `YYYY-MM-DDTHH:mm:ss` UTC format and
+    a freeDateTime pointer; `type` spells out draft vs schedule vs now
+    (including "draft may be past, schedule must be future"); `settings`
+    says key/value pairs from integrationSchema and "pass [] for drafts";
+    `attachments` says "pass [] for a text-only post"; `postsAndComments`
+    says first item = post, rest = comments.
+  - Empty arg descriptions filled: `generateVideoTool.identifier/output/
+    customParams`, `generateImageTool.prompt`, `videoFunctionTool.identifier/
+    functionName`, `triggerTool.dataSchema` ([] when no input needed).
+- **New `.freebuff/mcp-guidance-test.mjs` — 95/95**: pins teaching quality on
+  the live catalog — every tool description ≥ 40 chars, EVERY arg description
+  ≥ 10 chars (no empty schemas again), the next-hop chain (schema →
+  triggerTool, freeDateTime → date, mediaList → attachments, video polling,
+  widget fallback), and the schedule-tool recovery knowledge that broke the
+  loop on first try.
+- Loop friction unchanged (22 calls / 22.5 KB / ~5.8K tokens) — guidance
+  quality is about first-try success, not payload; the catalog dump that fed
+  this audit is reproducible from the guidance suite itself.
+- **Verification**: guidance 95/95 + loop 28/28 + full battery green on the
+  rebuilt backend: modern-cert 43/43, method-matrix 40/40, reads 33/33,
+  agent-safety 16/16, edit-safety 14/14, confirm 17/17, analytics 41/41,
+  rate+paginate 18/18, oauth 22/22, feature 57/57, lifecycle 16/16,
+  free-date regression green.
+
+### F20. Thirteenth-pass: per-post batch confirmation (2026-09-27)
+- **Feature**: multi-post schedule writes (2–25 posts) now show ONE
+  elicitation form with a checkbox per post — the human can keep a subset
+  (keep 18 of 20, drop 2) instead of the old all-or-nothing dialog. Each
+  checkbox carries the post's type, date and a text preview. Above 25 posts
+  the form would be unusable, so the dialog falls back to the simple
+  accept/decline confirmation.
+- **Agent-facing contract**: a partial accept returns
+  `{ errors: "The user unchecked N of M posts; the other K were created.
+  Declined socialPost indices: [i, j].", created: [{postId, integration}...],
+  declined: [i, j] }` — the agent can retry just the declined entries by
+  slicing socialPost. Decline-all returns the same shape with empty created.
+  Single posts and every fail-open path keep the legacy array shape.
+- **Safety preserved**: batch answers reuse the same replay channel, the
+  same `MCP_CONFIRM_TIMEOUT_MS` hang valve, and the same fail-open rules
+  (legacy era, no elicitation capability, confirm-mode off, channel error).
+  A missing/unknown answer shape declines rather than guesses; an `accept`
+  with missing per-post content creates all (checkboxes default on).
+- **Implementation**: `confirmBatchWithUser()` in confirm.elicit.ts (gate on
+  the modern envelope, forms built from the posts, boolean-array answer),
+  wired into integrationSchedulePostTool after all pre-flights; output schema
+  extended with `created`/`declined` optional fields (backward compatible).
+- **Verification**: new `.freebuff/mcp-batch-confirm-test.mjs` — 21/21
+  (form shape, partial accept with DB check, decline-all, malformed answer,
+  single-post compat, no-cap + legacy fail-open, 26-post fallback). Full
+  battery green on the rebuilt backend: guidance 95/95, loop 28/28,
+  confirm 17/17, modern-cert 43/43, method-matrix 40/40, reads 33/33,
+  agent-safety 16/16, edit-safety 14/14, analytics 41/41, rate+paginate
+  18/18, oauth 22/22, feature 57/57, lifecycle 16/16, free-date green.
+
 ## Recommended next improvements (priority order)
 1. ~~Provider analytics audit~~ — **DONE**: Mastodon + Bluesky implemented and mock-tested; audit matrix recorded under F5.
 2. ~~postsList attachments~~ — **RE-DONE + extended** (error field, threadParts): see F6.
@@ -492,3 +554,11 @@ Read tools are untouched.
 ### Eleventh pass suites (2026-09-27)
 - `.freebuff/mcp-agentic-loop-test.mjs` — **28/28 (new)**: see F18
 - Full battery green: 28 + 40 + 43 + 14 + 16 + 33 + 17 + 41 + 18 + 22 + 57 + 16 + free-date
+
+### Twelfth pass suites (2026-09-27)
+- `.freebuff/mcp-guidance-test.mjs` — **95/95 (new)**: see F19
+- Full battery green: 95 + 28 + 40 + 43 + 14 + 16 + 33 + 17 + 41 + 18 + 22 + 57 + 16 + free-date
+
+### Thirteenth pass suites (2026-09-27)
+- `.freebuff/mcp-batch-confirm-test.mjs` — **21/21 (new)**: see F20
+- Full battery green: 21 + 95 + 28 + 40 + 43 + 14 + 16 + 33 + 17 + 41 + 18 + 22 + 57 + 16 + free-date

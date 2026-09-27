@@ -120,3 +120,16 @@ and the orchestrator on :3002.
   validation) fire BEFORE the confirmation dialog on BOTH eras — an agent
   mistake must never pop a confirm dialog. postDetails unknown-id carries a
   postsList recovery hint.
+- **Guidance audit (round 12)**: `.freebuff/mcp-guidance-test.mjs` (95
+  checks) pins the catalog as the agent's documentation: no empty arg
+  descriptions, next-hop chain intact (schema→triggerTool,
+  freeDateTime→date, mediaList→attachments), and the schedule tool teaches
+  the shapes agents fumble first try ([] settings for drafts, UTC date
+  format, first=post/rest=comments). When touching any tool's inputSchema,
+  run this suite — a schema change can silently drop a describe().
+- **Batch confirmations (round 13)**: `.freebuff/mcp-batch-confirm-test.mjs`
+  (21 checks). Multi-post writes (2–25) confirm through ONE per-post
+  checkbox form; partial accepts return `{ errors, created, declined[] }`
+  where declined carries the unchecked socialPost indices (the agent can
+  retry just those). >25 posts fall back to the simple dialog. All
+  fail-open rules and the timeout valve are shared with the single dialog.
