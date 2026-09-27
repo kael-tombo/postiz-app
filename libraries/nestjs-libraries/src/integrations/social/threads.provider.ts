@@ -21,6 +21,9 @@ import { hasExtension } from '@gitroom/helpers/utils/has.extension';
 
 export class ThreadsProvider extends SocialAbstract implements SocialProvider {
   identifier = 'threads';
+  providerEnv = ['THREADS_APP_ID', 'THREADS_APP_SECRET'];
+  providerEnvNote =
+    'Meta app with the Threads use case; account added as use-case tester; http frontends route the callback through redirectmeto.com';
   name = 'Threads';
   isBetweenSteps = false;
   scopes = [

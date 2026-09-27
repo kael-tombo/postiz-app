@@ -23,6 +23,18 @@ const fixAcceptHeader = (req: Request) => {
 
 const openAiOAuthClientId = process.env.OPENAI_OAUTH_CLIENT_ID?.trim();
 const enableOidcEmailClaims = Boolean(openAiOAuthClientId);
+
+// Serve the dual-era protocol: MCP servers negotiate 'auto' and the HTTP
+// mounts dispatch through @modelcontextprotocol/server's createMcpHandler,
+// which classifies every request by its per-request _meta envelope. Modern
+// (2026-07-28) clients get per-request classification - which is what makes
+// the elicitation-based confirmation gate on the write tools work (Mastra's
+// replay elicitation returns an input_required result on the stateless JSON
+// mounts). Legacy (2025-era) clients are served by the SDK's stateless
+// fallback through the same factory, so the two eras cannot drift.
+// MCP_PROTOCOL_MODE=legacy restores the pre-dual-era wiring (pure legacy
+// dispatch, no elicitation confirmations).
+const protocolAuto = (process.env.MCP_PROTOCOL_MODE || 'auto').toLowerCase() !== 'legacy';
 const oauthScopes = [
   ...(enableOidcEmailClaims ? ['openid', 'email'] : []),
   'mcp:read',
@@ -113,12 +125,28 @@ export const startMcp = async (app: INestApplication) => {
       : {}),
   };
 
+  // Server-level instructions: advertised to MCP hosts at initialize so the
+  // agent gets orientation before its first tool call (many hosts surface
+  // them in the system prompt). Kept short and operational - the detailed
+  // teaching lives in the per-tool descriptions.
+  const serverInstructions = `
+Postiz schedules and manages social media posts across the connected channels (integrations) of one organization.
+Typical loops:
+- Discover: integrationList (channels, skip disabled ones) -> integrationSchema (per-platform rules and settings ids) -> groupList to partition channels.
+- Plan: freeDateTimeTool for a slot when the user gives no exact time, mediaListTool to reuse existing media before generating new one.
+- Act: integrationSchedulePostTool creates posts (draft/schedule/now; a batch array makes threads or comments depending on the platform); postContentTool / postSettingsTool / postDateTool edit an unpublished post in place; postStatusTool cancels back to draft or re-queues.
+- Observe: postsListTool lists a date window (paginated; shows attachments, errors, threads), postDetailsTool fetches one post by id, the analytics tools report channel or per-post performance.
+Rules that matter: posts can never be deleted (cancel to draft instead); content is HTML (<p>-wrapped lines, tags h1 h2 h3 u strong li ul p); all dates are UTC (YYYY-MM-DDTHH:mm:ss); get the user's confirmation before destructive actions - the write tools also ask over elicitation when the client supports it.
+`;
+
   const serverConfig = {
     name: 'Postiz MCP',
     version: '1.0.0',
     tools,
     agents: { postiz: agent },
     appResources,
+    instructions: serverInstructions,
+    ...(protocolAuto ? { protocolVersion: '2026-07-28' as const } : {}),
   };
 
   const server = new MCPServer(serverConfig);
@@ -131,6 +159,8 @@ export const startMcp = async (app: INestApplication) => {
     version: '1.0.0',
     tools,
     appResources,
+    instructions: serverInstructions,
+    ...(protocolAuto ? { protocolVersion: '2026-07-28' as const } : {}),
   });
 
   // a widget of a hidden tool is hidden with it
@@ -141,7 +171,24 @@ export const startMcp = async (app: INestApplication) => {
     version: '1.0.0',
     tools: claudeTools,
     appResources: claudeAppResources,
+    instructions: serverInstructions,
+    ...(protocolAuto ? { protocolVersion: '2026-07-28' as const } : {}),
   });
+
+  // Dual-era dispatch for the streamable HTTP mounts (see protocolAuto).
+  const serveDualEra = async (
+    mcpServer: MCPServer,
+    req: Request,
+    res: Response,
+    mountUrl: URL
+  ) => {
+    // CORS + auth are already handled by the caller; dispatch the raw
+    // Node req/res through the dual-era handler. Express req/res ARE the
+    // Node primitives the handler expects.
+    fixAcceptHeader(req);
+    // @ts-expect-error Express req/res satisfy the Node handler signature
+    await mcpServer.getModernEraNodeHandler()(req, res);
+  };
 
   // Two RFC 8414 path-based issuers backed by the same endpoints and code.
   // /mcp-oauth-chatgpt is what the ChatGPT app submission points at: it does
@@ -303,6 +350,10 @@ export const startMcp = async (app: INestApplication) => {
 
     fixAcceptHeader(req);
     await runWithContext({ requestId: token!, auth }, async () => {
+      if (protocolAuto) {
+        await serveDualEra(mcpServer, req, res, url);
+        return;
+      }
       await mcpServer.startHTTP({
         url: url,
         httpPath: url.pathname,
@@ -353,6 +404,10 @@ export const startMcp = async (app: INestApplication) => {
     fixAcceptHeader(req);
     // @ts-ignore
     await runWithContext({ requestId: token, auth: req.auth }, async () => {
+      if (protocolAuto) {
+        await serveDualEra(server, req, res, url);
+        return;
+      }
       await server.startHTTP({
         url,
         httpPath: url.pathname,
@@ -396,6 +451,10 @@ export const startMcp = async (app: INestApplication) => {
       // @ts-ignore
       { requestId: req.params.id, auth: req.auth },
       async () => {
+        if (protocolAuto) {
+          await serveDualEra(server, req, res, url);
+          return;
+        }
         await server.startHTTP({
           url,
           httpPath: url.pathname,

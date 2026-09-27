@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { Injectable } from '@nestjs/common';
 import { PostsService } from '@gitroom/nestjs-libraries/database/prisma/posts/posts.service';
 import { checkAuth } from '@gitroom/nestjs-libraries/chat/auth.context';
+import { orgWriteRateLimit } from '@gitroom/nestjs-libraries/chat/tools/write.rate.limit';
+import { confirmWithUser } from '@gitroom/nestjs-libraries/chat/tools/confirm.elicit';
 
 @Injectable()
 export class PostSettingsTool implements AgentToolInterface {
@@ -29,6 +31,7 @@ Find the post first (list your posts) and pass its "id" here.
 The settings are merged into the existing ones, so only pass the keys you want to change; anything you don't pass stays as it is.
 This relies on the integrationSchema tool [input:settings] to know which keys exist for the platform.
 If validation fails, the result contains output.errors describing what to fix; the call can be retried with corrected parameters.
+The tool also asks the user to confirm through the MCP connection (elicitation) when the client supports it; a declined confirmation returns output.errors and nothing changes.
 `,
       inputSchema: z.object({
         id: z
@@ -62,6 +65,24 @@ If validation fails, the result contains output.errors describing what to fix; t
         const organizationId = JSON.parse(
           (context?.requestContext as any)?.get('organization') as string
         ).id;
+
+        const rate = await orgWriteRateLimit(organizationId);
+        if (rate.limited) {
+          return { output: { errors: rate.message! } };
+        }
+
+        const keys = (inputData.settings || []).map((s: { key: string }) => s.key).join(', ');
+        const confirm = await confirmWithUser(
+          context,
+          `Update the settings (${keys}) of post "${inputData.id}"?`
+        );
+        if (confirm.asked && !confirm.confirmed) {
+          return {
+            output: {
+              errors: 'The user declined the settings update. No changes were made.',
+            },
+          };
+        }
 
         const settings = (inputData.settings || []).reduce(
           (acc: Record<string, any>, s: { key: string; value: any }) => ({

@@ -72,6 +72,9 @@ type XPendingData = {
 )
 export class XProvider extends SocialAbstract implements SocialProvider {
   identifier = 'x';
+  providerEnv = ['X_API_KEY', 'X_API_SECRET'];
+  providerEnvNote =
+    'X developer app with OAuth 1.0a Read+Write enabled (Free tier posts text-only)';
   name = 'X';
   isBetweenSteps = false;
   scopes = [] as string[];

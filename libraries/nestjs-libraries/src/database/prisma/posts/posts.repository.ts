@@ -73,7 +73,7 @@ export class PostsRepository {
         },
         organizationId: orgId,
         publishDate: {
-          lte: dayjs(date).toDate(),
+          lte: dayjs.utc(date).toDate(),
         },
         deletedAt: null,
         parentPostId: null,
@@ -176,6 +176,8 @@ export class PostsRepository {
         group: true,
         creationMethod: true,
         settings: true,
+        image: true,
+        error: true,
         tags: {
           where: {
             tag: {
@@ -489,7 +491,7 @@ export class PostsRepository {
         id,
       },
       data: {
-        publishDate: dayjs(date).toDate(),
+        publishDate: dayjs.utc(date).toDate(),
         // schedule: set state to QUEUE (or DRAFT if it was a draft)
         // update: don't change the state
         ...(action === 'schedule'
@@ -544,7 +546,7 @@ export class PostsRepository {
 
     for (const value of body.value) {
       const updateData = (type: 'create' | 'update') => ({
-        publishDate: dayjs(date).toDate(),
+        publishDate: dayjs.utc(date).toDate(),
         integration: {
           connect: {
             id: body.integration.id,

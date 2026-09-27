@@ -52,6 +52,7 @@ export class PinterestProvider
   implements SocialProvider
 {
   identifier = 'pinterest';
+  providerEnv = ['PINTEREST_CLIENT_ID', 'PINTEREST_CLIENT_SECRET'];
   name = 'Pinterest';
   isBetweenSteps = false;
   scopes = [

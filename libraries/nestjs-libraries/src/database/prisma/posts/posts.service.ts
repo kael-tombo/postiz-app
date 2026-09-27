@@ -951,7 +951,12 @@ export class PostsService {
       const { posts } = await this._postRepository.createOrUpdatePost(
         body.type,
         orgId,
-        body.type === 'now' ? dayjs().format('YYYY-MM-DDTHH:mm:00') : body.date,
+        // Z-less UTC wall time: the repository parses this string with
+        // dayjs.utc() (F1), so producing it with LOCAL-time dayjs() would put
+        // "post now" offset hours into the future/past on non-UTC hosts.
+        body.type === 'now'
+          ? dayjs.utc().format('YYYY-MM-DDTHH:mm:00')
+          : body.date,
         post,
         body.tags,
         creationMethod,
@@ -1324,6 +1329,12 @@ export class PostsService {
     times: number[],
     date: dayjs.Dayjs
   ): Promise<string> {
+    // With no posting times configured (e.g. an organization without any
+    // connected channel) there is no slot to search for and the day-by-day
+    // recursion below would never terminate - return a sensible default.
+    if (!times.length) {
+      return dayjs.utc().add(1, 'hour').format('YYYY-MM-DDTHH:mm:00');
+    }
     const list = await this._postRepository.getPostsCountsByDates(
       orgId,
       times,

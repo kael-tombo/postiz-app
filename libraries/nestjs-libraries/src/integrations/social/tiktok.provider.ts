@@ -33,6 +33,9 @@ import { Rules } from '@gitroom/nestjs-libraries/chat/rules.description.decorato
 )
 export class TiktokProvider extends SocialAbstract implements SocialProvider {
   identifier = 'tiktok';
+  providerEnv = ['TIKTOK_CLIENT_ID', 'TIKTOK_CLIENT_SECRET'];
+  providerEnvNote =
+    'TikTok developer app with Login Kit; sandbox tester required; http frontends route the callback through redirectmeto.com';
   name = 'Tiktok';
   isBetweenSteps = false;
   convertToJPEG = true;

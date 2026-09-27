@@ -57,6 +57,9 @@ const clientAndYoutube = () => {
 export class YoutubeProvider extends SocialAbstract implements SocialProvider {
   override maxConcurrentJob = 200; // YouTube has strict upload quotas
   identifier = 'youtube';
+  providerEnv = ['YOUTUBE_CLIENT_ID', 'YOUTUBE_CLIENT_SECRET'];
+  providerEnvNote =
+    'Google Cloud OAuth client (Web application) with the account as a test user on the consent screen';
   name = 'YouTube';
   isBetweenSteps = true;
   dto = YoutubeSettingsDto;

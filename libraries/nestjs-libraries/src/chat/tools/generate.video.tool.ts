@@ -63,6 +63,12 @@ export class GenerateVideoTool implements AgentToolInterface {
       execute: async (inputData, context) => {
         checkAuth(inputData, context);
         const org = JSON.parse((context?.requestContext as any)?.get('organization') as string);
+        // Best-effort progress ping: MCP hosts that sent a progressToken see
+        // "video generation queued" immediately instead of waiting for the
+        // (long) tool return. No-op when the caller sent no token.
+        try {
+          await (context as any)?.mcp?.progress?.({ progress: 0, total: 1, message: 'Video generation queued' });
+        } catch (err) {}
         try {
           const value = await this._mediaService.startGenerateVideo(org, {
             type: inputData.identifier,

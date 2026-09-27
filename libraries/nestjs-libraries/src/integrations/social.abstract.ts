@@ -124,6 +124,20 @@ export abstract class SocialAbstract {
   abstract identifier: string;
   maxConcurrentJob = 1;
 
+  /**
+   * Env keys the provider needs to run its OAuth. Declared here so the boot
+   * diagnostics can tell an operator exactly which provider is misconfigured
+   * (the failure mode otherwise is a provider consent URL with client_id= and
+   * a generic "Could not connect to the platform" in the UI).
+   */
+  providerEnv?: string[];
+
+  /**
+   * Human-facing note surfaced together with the env diagnostics (e.g. "also
+   * needs a Facebook Page").
+   */
+  providerEnvNote?: string;
+
   public handleErrors(
     body: string,
     status: number

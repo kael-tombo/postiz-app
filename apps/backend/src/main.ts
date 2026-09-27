@@ -19,6 +19,7 @@ import { PostValidationExceptionFilter } from '@gitroom/backend/api/routes/posts
 import { HttpExceptionFilter } from '@gitroom/nestjs-libraries/services/exception.filter';
 import { ConfigurationChecker } from '@gitroom/helpers/configuration/configuration.checker';
 import { startMcp } from '@gitroom/nestjs-libraries/chat/start.mcp';
+import { IntegrationManager } from '@gitroom/nestjs-libraries/integrations/integration.manager';
 
 async function start() {
   const app = await NestFactory.create(AppModule, {
@@ -70,13 +71,15 @@ async function start() {
 
   loadSwagger(app);
 
-  const port = process.env.PORT || 3000;
+  // Number() so values like PORT=0 (seen set machine-wide on some dev boxes)
+  // fall back to the default instead of binding an ephemeral port.
+  const port = Number(process.env.PORT) || 3000;
 
   try {
     await app.listen(port);
     console.log('Backend started successfully on port ' + port);
 
-    checkConfiguration(); // Do this last, so that users will see obvious issues at the end of the startup log without having to scroll up.
+    checkConfiguration(app); // Do this last, so that users will see obvious issues at the end of the startup log without having to scroll up.
 
     Logger.log(`🚀 Backend is running on: http://localhost:${port}`);
   } catch (e) {
@@ -84,9 +87,28 @@ async function start() {
   }
 }
 
-function checkConfiguration() {
+function checkConfiguration(appModule?: any) {
   const checker = new ConfigurationChecker();
   checker.readEnvFromProcess();
+  try {
+    // Surface social providers with missing OAuth keys in the same report -
+    // the failure mode without this is a consent URL with client_id= empty and
+    // only a generic toast in the UI.
+    const manager = appModule?.get?.(IntegrationManager, { strict: false });
+    if (manager) {
+      checker.providers = manager
+        .getAllowedSocialsIntegrations()
+        .map((identifier: string) => {
+          const provider = manager.getSocialIntegration(identifier);
+          return {
+            name: provider.name,
+            identifier,
+            envKeys: (provider as any).providerEnv || [],
+            note: (provider as any).providerEnvNote as string | undefined,
+          };
+        });
+    }
+  } catch (err) {}
   checker.check();
 
   if (checker.hasIssues()) {

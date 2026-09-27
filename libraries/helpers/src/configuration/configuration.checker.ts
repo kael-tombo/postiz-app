@@ -6,6 +6,15 @@ export class ConfigurationChecker {
   cfg: dotenv.DotenvParseOutput;
   issues: string[] = [];
 
+  // Optional: social provider declarations (set by the backend so missing
+  // provider keys surface in the same startup report)
+  providers?: Array<{
+    name: string;
+    identifier: string;
+    envKeys: string[];
+    note?: string;
+  }>;
+
   readEnvFromFile() {
     const envFile = resolve(__dirname, '../../../.env');
 
@@ -31,6 +40,26 @@ export class ConfigurationChecker {
     this.checkIsValidUrl('NEXT_PUBLIC_BACKEND_URL');
     this.checkIsValidUrl('BACKEND_INTERNAL_URL');
     this.checkNonEmpty('STORAGE_PROVIDER', 'Needed to setup storage.');
+    this.checkProviders();
+  }
+
+  // Social providers whose OAuth keys are missing: the connect flow would
+  // otherwise fail deep inside the provider consent redirect (client_id empty)
+  // with only a generic toast in the UI.
+  checkProviders() {
+    for (const provider of this.providers || []) {
+      if (!provider.envKeys.length) {
+        continue;
+      }
+      const missing = provider.envKeys.filter((key) => !this.get(key));
+      if (missing.length) {
+        this.issues.push(
+          `${provider.name} (${provider.identifier}) is missing env keys: ${missing.join(', ')} - connecting this channel will fail.${
+            provider.note ? ' ' + provider.note : ''
+          }`
+        );
+      }
+    }
   }
 
   checkNonEmpty(key: string, description?: string): boolean {

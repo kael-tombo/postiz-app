@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpException,
   Post,
@@ -151,7 +152,7 @@ export class UsersController {
     @Query('name') name: string
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
 
     return this._userService.getImpersonateUser(name);
@@ -164,7 +165,7 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
 
     response.cookie('impersonate', id, {
@@ -191,7 +192,7 @@ export class UsersController {
     @Req() req: Request
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
 
     // `user` is the impersonated account, so the admin id comes from the token.

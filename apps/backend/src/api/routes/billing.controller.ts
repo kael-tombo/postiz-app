@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpException,
   Param,
@@ -193,7 +194,7 @@ export class BillingController {
     @GetOrgFromRequest() org: Organization
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
 
     return (await this.provider(org)).getCharges(org.id);
@@ -206,7 +207,7 @@ export class BillingController {
     @Body() body: { chargeIds: string[] }
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
 
     return (await this.provider(org)).refundCharges(org.id, body.chargeIds);
@@ -218,7 +219,7 @@ export class BillingController {
     @GetOrgFromRequest() org: Organization
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
 
     return (await this.provider(org)).cancelSubscription(org.id);
@@ -230,7 +231,7 @@ export class BillingController {
     @GetOrgFromRequest() org: Organization
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
 
     return (await this.provider(org)).getCouponInfo(org.id);
@@ -243,7 +244,7 @@ export class BillingController {
     @Body() body: AdminApplyCouponDto
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
 
     return (await this.provider(org)).applyCoupon(org.id, body);
@@ -255,7 +256,7 @@ export class BillingController {
     @GetOrgFromRequest() org: Organization
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
 
     return (await this.provider(org)).cancelCoupon(org.id);

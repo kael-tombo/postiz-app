@@ -40,6 +40,21 @@ export class IntegrationListTool implements AgentToolInterface {
             name: z.string(),
             picture: z.string(),
             platform: z.string(),
+            disabled: z
+              .boolean()
+              .describe(
+                'When true the channel is disabled - never schedule to it, tell the user to reconnect it in the Postiz app'
+              ),
+            display: z
+              .string()
+              .describe('The channel\'s public handle or profile name'),
+            type: z
+              .string()
+              .describe('Channel type, e.g. "social" or "article" (blog)'),
+            customer: z
+              .object({ id: z.string(), name: z.string() })
+              .optional()
+              .describe('The group (customer) this channel belongs to, if any'),
           })
         ),
       }),
@@ -60,7 +75,7 @@ export class IntegrationListTool implements AgentToolInterface {
               disabled: p.disabled,
               picture: p.picture || '/no-picture.jpg',
               platform: p.providerIdentifier,
-              display: p.profile,
+              display: p.profile || '',
               type: p.type,
               customer: p.customer
                 ? {

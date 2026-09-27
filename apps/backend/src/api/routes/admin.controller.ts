@@ -1,7 +1,7 @@
 import {
   Controller,
+  ForbiddenException,
   Get,
-  HttpException,
   Query,
 } from '@nestjs/common';
 import { GetUserFromRequest } from '@gitroom/nestjs-libraries/user/user.from.request';
@@ -21,7 +21,7 @@ export class AdminController {
 
   private assertSuperAdmin(user: User) {
     if (!user?.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
   }
 

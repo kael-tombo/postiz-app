@@ -41,6 +41,12 @@ const clientAndGmb = () => {
 export class GmbProvider extends SocialAbstract implements SocialProvider {
   override maxConcurrentJob = 3;
   identifier = 'gmb';
+  providerEnv = [
+    'GOOGLE_GMB_CLIENT_ID',
+    'GOOGLE_GMB_CLIENT_SECRET',
+  ];
+  providerEnvNote =
+    'Google OAuth client (GOOGLE_GMB_* or falls back to YOUTUBE_* keys)';
   name = 'Google My Business';
   isBetweenSteps = true;
   scopes = [

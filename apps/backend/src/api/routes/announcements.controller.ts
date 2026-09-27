@@ -2,8 +2,8 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
-  HttpException,
   Param,
   Post,
 } from '@nestjs/common';
@@ -29,7 +29,7 @@ export class AnnouncementsController {
     @Body() body: AnnouncementDto
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
     return this._announcementsService.createAnnouncement(body);
   }
@@ -40,7 +40,7 @@ export class AnnouncementsController {
     @Param('id') id: string
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
     return this._announcementsService.deleteAnnouncement(id);
   }

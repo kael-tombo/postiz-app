@@ -2,8 +2,8 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
-  HttpException,
   Param,
   Post,
 } from '@nestjs/common';
@@ -54,7 +54,7 @@ export class SettingsController {
     @Body() body: AdminAddTeamMemberDto
   ) {
     if (!user.isSuperAdmin) {
-      throw new HttpException('Unauthorized', 400);
+      throw new ForbiddenException();
     }
 
     return this._organizationService.addTeamMemberByEmail(org, body);

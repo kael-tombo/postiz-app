@@ -77,6 +77,11 @@ export class ClippingTool implements AgentToolInterface {
         const org = JSON.parse(
           (context?.requestContext as any)?.get('organization') as string
         );
+        // Best-effort progress ping for hosts that sent a progressToken;
+        // no-op otherwise. Clipping runs minutes long, so early feedback helps.
+        try {
+          await (context as any)?.mcp?.progress?.({ progress: 0, total: 1, message: 'Video clipping queued' });
+        } catch (err) {}
         try {
           const value = await this._clippingService.startClipping(org, {
             url: inputData.url,

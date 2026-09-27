@@ -1,0 +1,158 @@
+/**
+ * Elicitation-backed confirmation for the destructive MCP write tools.
+ *
+ * The helper is opt-in per tool call: it asks the human on the other end of the
+ * MCP connection to confirm an action through `context.mcp.elicitation`
+ * (Mastra's `sendRequest`). It is wired into the five mutating tools
+ * (schedule post, edit content, reschedule, status/cancel, settings).
+ *
+ * When it actually asks:
+ * - the request is served on the 2026-07-28 protocol revision. Detected via the
+ *   reserved `_meta['io.modelcontextprotocol/protocolVersion']` envelope that
+ *   every modern client attaches to each request; and
+ * - the client declared the `elicitation` capability at initialize time (it
+ *   also rides the per-request `_meta` envelope on this era).
+ *   Mastra's `createReplayElicitation` turns an unanswered `sendRequest` into an
+ *   `input_required` tool result (an embedded elicitation/create form) and the
+ *   client retries the call with the answer attached — this works on the
+ *   stateless HTTP mounts (`/mcp`, `/mcp/:id`, OAuth) where a legacy-era
+ *   server->client request cannot be delivered (the SDK's JSON-response
+ *   transport silently drops it and the call would hang).
+ *
+ * Everything else fails OPEN (no confirmation asked): legacy-era sessions
+ * (2025-03-26 / 2025-06-18), hosts that did not declare elicitation, and any
+ * elicitation runtime error. The per-tool descriptions already teach
+ * "get the user's confirmation first", so this is defense in depth, not the
+ * only line.
+ *
+ * `MCP_CONFIRM_MODE=off` disables the gate globally (host may already confirm).
+ *
+ * Hang safety valve: the gate only works while Mastra's replay elicitation is
+ * actually wired into the tool context. If that ever stops being true (an SDK
+ * upgrade changing internals, a mount dispatching modern requests without
+ * replay support), `sendRequest` would block FOREVER and the agent would hang
+ * on the write tool. The call is therefore raced against
+ * `MCP_CONFIRM_TIMEOUT_MS` (default 30s); a timeout fails OPEN - the worst
+ * case becomes an unconfirmed write (the tool descriptions still ask the
+ * model to get consent), never a hung agent.
+ */
+import { Logger } from '@nestjs/common';
+
+const MODE = (process.env.MCP_CONFIRM_MODE || 'on').toLowerCase();
+const CONFIRM_DISABLED = MODE === 'off' || MODE === 'false';
+
+const CONFIRM_TIMEOUT_MS = (() => {
+  const n = Number(process.env.MCP_CONFIRM_TIMEOUT_MS || 30000);
+  return Number.isFinite(n) && n > 0 ? n : 30000;
+})();
+
+const PROTOCOL_VERSION_META_KEY = 'io.modelcontextprotocol/protocolVersion';
+const CLIENT_CAPABILITIES_META_KEY = 'io.modelcontextprotocol/clientCapabilities';
+const MODERN_ERA = '2026-07-28';
+
+// Mirrors @mastra/mcp's own isModernEraRequest(): the reserved per-request
+// `_meta` envelope only exists on requests the modern codec parsed. This is
+// exactly the condition under which Mastra wires the replay-based elicitation
+// into the tool (input_required round-trip), so gating on it can never hang a
+// legacy session: there, sendRequest would go out as a server->client request
+// that the stateless JSON transports silently drop.
+
+// The documented ElicitResult action is "accept" | "decline" | "cancel";
+// the extra aliases tolerate loose hosts.
+const ACCEPT_ACTIONS = new Set(['accept', 'confirm', 'yes']);
+const DECLINE_ACTIONS = new Set(['decline', 'cancel', 'deny', 'no']);
+
+export type ConfirmDecision =
+  | { asked: false }
+  | { asked: true; confirmed: true }
+  | { asked: true; confirmed: false };
+
+/**
+ * Best-effort confirmation through MCP elicitation.
+ * Never throws; returns whether the action may proceed.
+ */
+export const confirmWithUser = async (
+  context: any,
+  message: string
+): Promise<ConfirmDecision> => {
+  if (CONFIRM_DISABLED) {
+    return { asked: false };
+  }
+
+  try {
+    const extra: any = context?.mcp?.extra;
+    // Legacy-era request (no per-request envelope) -> gate stays closed: the
+    // answer could not be routed back through these transports anyway.
+    // NOTE: the reserved envelope keys are lifted OUT of params._meta by the
+    // 2026 codec before handlers run - they only exist on mcpReq.envelope.
+    const envelope: any = extra?.mcpReq?.envelope;
+    if (!envelope || typeof envelope !== 'object') {
+      return { asked: false };
+    }
+    if (envelope[PROTOCOL_VERSION_META_KEY] !== MODERN_ERA) {
+      return { asked: false };
+    }
+    const caps = envelope[CLIENT_CAPABILITIES_META_KEY];
+    if (!caps || typeof caps !== 'object' || !caps.elicitation) {
+      return { asked: false };
+    }
+
+    let timeoutTimer: any;
+    const result: any = await Promise.race([
+      context.mcp.elicitation.sendRequest({
+        mode: 'form',
+        message,
+        requestedSchema: {
+          type: 'object',
+          properties: {
+            confirm: {
+              type: 'boolean',
+              title: 'Confirm',
+              description: 'Confirm to run the action, or decline.',
+            },
+          },
+          required: ['confirm'],
+        },
+      }),
+      // Never trust the channel to answer: a permanently-pending sendRequest
+      // (unwired replay elicitation) must degrade to fail-open, not hang the
+      // agent's write tool for the rest of the session.
+      new Promise<never>((_, reject) => {
+        timeoutTimer = setTimeout(
+          () =>
+            reject(
+              Object.assign(new Error('elicitation confirmation timed out'), {
+                name: 'ElicitationTimeout',
+              })
+            ),
+          CONFIRM_TIMEOUT_MS
+        );
+      }),
+    ]).finally(() => clearTimeout(timeoutTimer));
+
+    const action = String(result?.action || '').toLowerCase();
+    if (ACCEPT_ACTIONS.has(action)) {
+      const confirmed = result?.content?.confirm !== false;
+      return { asked: true, confirmed };
+    }
+    if (DECLINE_ACTIONS.has(action)) {
+      return { asked: true, confirmed: false };
+    }
+    // Unknown shape -> treat as a decline (do not write on a vague answer).
+    return { asked: true, confirmed: false };
+  } catch (err: any) {
+    // Mastra's modern-era replay elicitation signals "show the form" by
+    // throwing this internal error out of sendRequest; the tools/call handler
+    // converts it into the input_required result. It MUST propagate - swallowing
+    // it would run the write on the first round without any confirmation.
+    if (err?.name === 'ElicitationReplayInterrupt') {
+      throw err;
+    }
+    // No elicitation support, transport replay quirks, host disconnects...
+    // Never block a write because the confirmation channel failed.
+    new Logger('McpConfirm').warn(
+      `Confirmation elicitation failed (${err?.message || err}) - proceeding without confirmation`
+    );
+    return { asked: false };
+  }
+};

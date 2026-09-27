@@ -30,6 +30,9 @@ export const META_GRAPH_API_VERSION = 'v25.0';
 )
 export class FacebookProvider extends SocialAbstract implements SocialProvider {
   identifier = 'facebook';
+  providerEnv = ['FACEBOOK_APP_ID', 'FACEBOOK_APP_SECRET'];
+  providerEnvNote =
+    'Meta app with Facebook Login; connects Facebook Pages (not personal profiles); app roles required in Development mode';
   name = 'Facebook Page';
   isBetweenSteps = true;
   scopes = [

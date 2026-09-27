@@ -38,7 +38,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     ? PlausibleProvider
     : Fragment;
   return (
-    <html>
+    // Browser extensions inject attributes on <html> before hydration;
+    // suppress only that element-level mismatch.
+    <html suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         {!!process.env.DATAFAST_WEBSITE_ID && (
