@@ -460,6 +460,34 @@ Note: `getPosts` still returns root rows only (comments are child rows) —
   agent-safety 16/16, edit-safety 14/14, analytics 41/41, rate+paginate
   18/18, oauth 22/22, feature 57/57, lifecycle 16/16, free-date green.
 
+### F21. Fourteenth-pass: cold-start agent eval — catalog-only first-try scoring (2026-09-27)
+- **What it is**: `.freebuff/mcp-cold-start-eval.mjs` plays an LLM that has
+  NEVER seen the codebase. Its only knowledge is the tools/list catalog; it
+  picks tools by matching task words against descriptions and synthesizes
+  arguments with generic rules (copy format examples from description text,
+  follow tool-name cross-references for dataflow, honor [] hints, match
+  enums to task words, never pour a string into a boolean/enum arg, do not
+  invent optional args). It then EXECUTES the journey on a fresh org and
+  scores first-try argument validity per hop: 1.0 valid, 0.5 after reading
+  the error, 0 never. A zod failure on the first attempt is a documentation
+  failure, not the agent's.
+- **Key measurement subtlety**: on a modern-era write, the FIRST valid
+  attempt returns the elicitation dialog (input_required) — that is proof
+  the arguments passed validation, not an error. The eval scores on the raw
+  result before unwrapping.
+- **Result: 5.0/5 — every hop first-try valid on a fresh org**
+  (integrationList → integrationSchema → freeDateTimeTool → the confirmed
+  write → postDetails), deterministic across runs, with the synthesized
+  socialPost logged in the suite output. The guidance fixes of F19 are what
+  the synthesizer feeds on: the UTC format example, the [] hints and the
+  integrationList id-source note are exactly what makes cold-start args
+  valid without any code knowledge.
+- **Verification**: eval 9/9 (rerun deterministic) + full battery green:
+  batch 21/21, guidance 95/95, loop 28/28, confirm 17/17, modern-cert
+  43/43, method-matrix 40/40, reads 33/33, agent-safety 16/16,
+  edit-safety 14/14, analytics 41/41, rate+paginate 18/18, oauth 22/22,
+  feature 57/57, lifecycle 16/16, free-date regression green.
+
 ## Recommended next improvements (priority order)
 1. ~~Provider analytics audit~~ — **DONE**: Mastodon + Bluesky implemented and mock-tested; audit matrix recorded under F5.
 2. ~~postsList attachments~~ — **RE-DONE + extended** (error field, threadParts): see F6.
@@ -562,3 +590,7 @@ Read tools are untouched.
 ### Thirteenth pass suites (2026-09-27)
 - `.freebuff/mcp-batch-confirm-test.mjs` — **21/21 (new)**: see F20
 - Full battery green: 21 + 95 + 28 + 40 + 43 + 14 + 16 + 33 + 17 + 41 + 18 + 22 + 57 + 16 + free-date
+
+### Fourteenth pass suites (2026-09-27)
+- `.freebuff/mcp-cold-start-eval.mjs` — **9/9, 5.0/5 first-try (new)**: see F21
+- Full battery green: 9 + 21 + 95 + 28 + 40 + 43 + 14 + 16 + 33 + 17 + 41 + 18 + 22 + 57 + 16 + free-date

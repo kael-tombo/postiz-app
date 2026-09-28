@@ -133,3 +133,10 @@ and the orchestrator on :3002.
   where declined carries the unchecked socialPost indices (the agent can
   retry just those). >25 posts fall back to the simple dialog. All
   fail-open rules and the timeout valve are shared with the single dialog.
+- **Cold-start agent eval (round 14)**:
+  `.freebuff/mcp-cold-start-eval.mjs` (9 checks, score 5.0/5) plays a
+  catalog-only agent through the schedule journey on a fresh org and scores
+  first-try argument validity. Run it after ANY change to tool descriptions
+  or input schemas — a zod failure here means the docs no longer teach the
+  shape. Note: a modern write's first valid attempt returns input_required;
+  score against the RAW result before unwrapping.
