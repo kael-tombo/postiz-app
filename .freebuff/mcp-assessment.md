@@ -594,3 +594,43 @@ Read tools are untouched.
 ### Fourteenth pass suites (2026-09-27)
 - `.freebuff/mcp-cold-start-eval.mjs` — **9/9, 5.0/5 first-try (new)**: see F21
 - Full battery green: 9 + 21 + 95 + 28 + 40 + 43 + 14 + 16 + 33 + 17 + 41 + 18 + 22 + 57 + 16 + free-date
+
+## F22 — Pre-flight before dialog on the remaining two edit tools (round 15)
+Round 8 (F18) taught postDate/postStatus the "refuse doomed calls BEFORE
+asking" ordering. postContent and postSettings still ran confirmWithUser
+first: a modern client was shown a confirmation dialog for a call that
+could not succeed (unknown id, published post, past-QUEUE). Both tools now
+pre-flight (org-scoped getPostsRecursively: unknown id / comment id /
+state / past-QUEUE / content-count) before the dialog, matching the F18
+convention. postSettings also gained the state+date guards it never had.
+
+## F23 — Annotations audit (round 15)
+`.freebuff/mcp-annotations-test.mjs` (24 checks) asserts the catalog-wide
+invariants: every tool carries a title + the four boolean hints; the ten
+pure reads are readOnly+non-destructive; the five write tools (schedule,
+content, date, status, trigger) are non-readOnly+destructive;
+postSettingsTool is deliberately write-but-reversible (a settings merge can
+be undone) and is asserted as such. Sections B–C replay the F18/F22
+ordering on ALL five mutating post tools: a doomed call must return
+output.errors with resultType != input_required; happy paths must still
+dialog + accept + decline correctly. Suite fixed three real things: two
+wrong tool ids in my own probe, postSettings reclassified as
+non-destructive, and — see F24.
+
+## F24 — ask_postiz leak removed (round 15)
+Mastra's MCPServer converts every agent registered under `agents:` into a
+generated annotation-less `ask_<agentKey>` catch-all tool. The directory-
+facing servers already omitted it (comment in start.mcp.ts), but the main
+/mcp mount still registered `agents: { postiz: agent }`, so MCP clients saw
+25 tools with one annotation-less catch-all. Dropped `agents` from the main
+config: the catalog is exactly the 24 annotated tools (27 registered minus
+the catch-all and the two agent-only helpers), every one uniformly
+annotated. The chat agent stays reachable through its own endpoints;
+`agent.listTools()` still enumerates its tools. Catalog-count assertions in
+cold-start-eval / guidance / method-matrix / modern-cert updated to the
+24-tool contract.
+
+### Fifteenth pass suites (2026-09-27)
+- `.freebuff/mcp-annotations-test.mjs` — **24/24 (new)**: see F23/F24
+- Full battery green (13 suites live): 24 + 9 + 93 + 40 + 43 + 14 + 17 + 28
+  + 16 + 18 + 33 + 22 + 41 = 398 assertions, 0 failures

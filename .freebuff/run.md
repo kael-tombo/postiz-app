@@ -133,6 +133,15 @@ and the orchestrator on :3002.
   where declined carries the unchecked socialPost indices (the agent can
   retry just those). >25 posts fall back to the simple dialog. All
   fail-open rules and the timeout valve are shared with the single dialog.
+- **Annotations audit (round 15)**:
+  `.freebuff/mcp-annotations-test.mjs` (24 checks) — run after ANY change to
+  a tool's annotations block, any change to the mutating-tool pre-flights,
+  or any change to the MCPServer config in start.mcp.ts. Invariants: 24
+  tools, every one title+4-hints annotated, no generated ask_<agent>
+  catch-all (F24), reads readOnly, writes destructive, postSettings
+  deliberately reversible; sections B–C re-verify the F18/F22 "refuse
+  doomed calls BEFORE the dialog" ordering on all five mutating post tools
+  (raw resultType must NOT be input_required on a doomed call).
 - **Cold-start agent eval (round 14)**:
   `.freebuff/mcp-cold-start-eval.mjs` (9 checks, score 5.0/5) plays a
   catalog-only agent through the schedule journey on a fresh org and scores

@@ -35,7 +35,7 @@ const lines = t.split('\n').filter((l) => l.startsWith('data:'));
 for (let i = lines.length - 1; i >= 0; i--) { try { j = JSON.parse(lines[i].slice(5).trim()); break; } catch {} }
 const tools = j?.result?.tools || [];
 const byName = Object.fromEntries(tools.map((x) => [x.name, x]));
-check('catalog loaded (25 tools)', tools.length >= 25, String(tools.length));
+check('catalog loaded (24 tools)', tools.length === 24, String(tools.length));
 
 // ---------- global rules ----------
 console.log('== GLOBAL: every tool teaches ==');

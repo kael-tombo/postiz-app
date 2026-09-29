@@ -204,7 +204,9 @@ check('server/discover on oauth mount', discoOauth.status === 200 && Array.isArr
 
 const disc = await listToolsModern('/mcp', apiKey);
 check('tools/list on /mcp (modern, stateless)', disc.status === 200 && Array.isArray(disc.result?.tools), `status ${disc.status} ${JSON.stringify(disc.raw.json?.error || {}).slice(0, 140)}`);
-check('tool count >= 25', (disc.result?.tools?.length || 0) >= 25, `got ${disc.result?.tools?.length}`);
+// F24: exactly the 24 registered tools - the generated annotation-less
+// ask_postiz catch-all no longer leaks onto the catalog.
+check('tool count = 24 (F24 catalog uniformity)', (disc.result?.tools?.length || 0) === 24, `got ${disc.result?.tools?.length}`);
 check('catalog carries serverInfo in _meta', !!disc.result?._meta?.['io.modelcontextprotocol/serverInfo']?.name, JSON.stringify(disc.result?._meta || {}));
 check('catalog is cacheable (ttlMs + cacheScope, SEP-2549)', Number.isFinite(disc.result?.ttlMs) && !!disc.result?.cacheScope, JSON.stringify({ ttlMs: disc.result?.ttlMs, cacheScope: disc.result?.cacheScope }));
 check('instructions live on discover, NOT tools/list (split contract)', disc.result?.instructions === undefined, String(disc.result?.instructions));

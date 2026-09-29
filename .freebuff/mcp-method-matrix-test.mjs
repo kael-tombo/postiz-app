@@ -69,7 +69,7 @@ r = await call('server/discover', {}, { methodHeader: true, nameHeader: '' });
 check('server/discover served', r.status === 200 && Array.isArray(r.json?.result?.supportedVersions), `${r.status} ${JSON.stringify(r.json?.error || {}).slice(0, 100)}`);
 r = await call('tools/list', {}, { methodHeader: true, nameHeader: '' });
 check('tools/list served', r.status === 200 && Array.isArray(r.json?.result?.tools), `${r.status}`);
-check('catalog size >= 25', (r.json?.result?.tools?.length || 0) >= 25, String(r.json?.result?.tools?.length));
+check('catalog size = 24 (F24: no ask_postiz catch-all)', (r.json?.result?.tools?.length || 0) === 24, String(r.json?.result?.tools?.length));
 r = await call('tools/call', { name: 'postsListTool', arguments: { startDate: '2024-01-01', endDate: '2026-12-31', page: 1 } }, { methodHeader: true, nameHeader: 'postsListTool' });
 check('tools/call (read) served', r.status === 200 && !!r.json?.result, `${r.status}`);
 r = await call('resources/list', {}, { methodHeader: true, nameHeader: '' });

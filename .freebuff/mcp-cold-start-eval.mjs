@@ -205,7 +205,9 @@ let catJson = null;
 }
 const catalog = catJson?.result?.tools || [];
 const byName = Object.fromEntries(catalog.map((x) => [x.name, x]));
-check('catalog read (25 tools, the agent\u2019s only knowledge)', catalog.length >= 25, String(catalog.length));
+// 24 annotated tools since F24: the generated ask_postiz catch-all no
+// longer leaks onto the catalog (annotations uniformity, F23).
+check('catalog read (24 tools, the agent\u2019s only knowledge)', catalog.length === 24, String(catalog.length));
 
 const SCORES = [];
 async function attemptHop(hopName, toolName, taskText, dataflow) {
