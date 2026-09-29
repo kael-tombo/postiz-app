@@ -137,8 +137,9 @@ If validation fails, the result contains output.errors describing what to fix; t
         if (confirm.asked && !confirm.confirmed) {
           return {
             output: {
-              errors:
-                'The user declined the date change. No changes were made.',
+              errors: confirm.guidance
+                ? `The user declined the date change. No changes were made. ${confirm.guidance}`
+                : 'The user declined the date change. No changes were made.',
             },
           };
         }

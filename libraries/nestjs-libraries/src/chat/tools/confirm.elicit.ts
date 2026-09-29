@@ -50,6 +50,75 @@ const PROTOCOL_VERSION_META_KEY = 'io.modelcontextprotocol/protocolVersion';
 const CLIENT_CAPABILITIES_META_KEY = 'io.modelcontextprotocol/clientCapabilities';
 const MODERN_ERA = '2026-07-28';
 
+// ---------- F28 decline telemetry ----------
+// Repeated declines of the SAME action are a signal, not noise: the agent
+// is stuck in a confirm/decline loop and must change its question instead
+// of retrying. Declines are counted per organization + normalized action
+// message (quoted values stripped so different post ids count together);
+// after DECLINE_THRESHOLD declines of the same action within the TTL, the
+// tools append a guidance sentence to their decline error. Recording is
+// best-effort and never affects the decision itself.
+const DECLINE_TTL_MS = 10 * 60 * 1000;
+const DECLINE_THRESHOLD = 3;
+type DeclineEntry = { count: number; lastAt: number };
+const declineRegistry = new Map<string, DeclineEntry>();
+
+const declineSignature = (message: string): string =>
+  message.replace(/"[^"]*"/g, '""').replace(/\s+/g, ' ').trim().toLowerCase();
+
+const orgIdFromContext = (context: any): string => {
+  try {
+    return (
+      JSON.parse((context?.requestContext as any)?.get('organization') as string)
+        ?.id || 'unknown'
+    );
+  } catch {
+    return 'unknown';
+  }
+};
+
+const declineKey = (organizationId: string, message: string): string =>
+  `${organizationId}::${declineSignature(message)}`;
+
+const recordDecline = (organizationId: string, message: string): void => {
+  try {
+    const key = declineKey(organizationId, message);
+    const now = Date.now();
+    const entry = declineRegistry.get(key);
+    if (!entry || now - entry.lastAt > DECLINE_TTL_MS) {
+      declineRegistry.set(key, { count: 1, lastAt: now });
+      return;
+    }
+    entry.count += 1;
+    entry.lastAt = now;
+  } catch {
+    // telemetry must never break the confirmation flow
+  }
+};
+
+/** Guidance for the agent when this same action was declined repeatedly. */
+const declineGuidanceFor = (
+  organizationId: string,
+  message: string
+): string | undefined => {
+  try {
+    const entry = declineRegistry.get(declineKey(organizationId, message));
+    if (
+      !entry ||
+      entry.count < DECLINE_THRESHOLD ||
+      Date.now() - entry.lastAt > DECLINE_TTL_MS
+    ) {
+      return undefined;
+    }
+    return (
+      'The user has declined this same action several times recently - do not ' +
+      'keep retrying it. Ask them what should change about the request instead.'
+    );
+  } catch {
+    return undefined;
+  }
+};
+
 // Mirrors @mastra/mcp's own isModernEraRequest(): the reserved per-request
 // `_meta` envelope only exists on requests the modern codec parsed. This is
 // exactly the condition under which Mastra wires the replay-based elicitation
@@ -64,8 +133,8 @@ const DECLINE_ACTIONS = new Set(['decline', 'cancel', 'deny', 'no']);
 
 export type ConfirmDecision =
   | { asked: false }
-  | { asked: true; confirmed: true }
-  | { asked: true; confirmed: false };
+  | { asked: true; confirmed: true; guidance?: string }
+  | { asked: true; confirmed: false; guidance?: string };
 
 /** Per-post decisions from a batch confirmation form. */
 export type BatchConfirmDecision =
@@ -176,6 +245,7 @@ export const confirmBatchWithUser = async (
     const action = String(result?.action || '').toLowerCase();
     if (!ACCEPT_ACTIONS.has(action)) {
       // Decline / cancel / unknown shape -> nothing is created.
+      recordDecline(orgIdFromContext(context), message);
       return { asked: true, allowed: posts.map(() => false) };
     }
     const answers: any[] = Array.isArray(result?.content?.posts)
@@ -265,10 +335,24 @@ export const confirmWithUser = async (
       return { asked: true, confirmed };
     }
     if (DECLINE_ACTIONS.has(action)) {
-      return { asked: true, confirmed: false };
+      const organizationId = orgIdFromContext(context);
+      recordDecline(organizationId, message);
+      return {
+        asked: true,
+        confirmed: false,
+        guidance: declineGuidanceFor(organizationId, message),
+      };
     }
     // Unknown shape -> treat as a decline (do not write on a vague answer).
-    return { asked: true, confirmed: false };
+    {
+      const organizationId = orgIdFromContext(context);
+      recordDecline(organizationId, message);
+      return {
+        asked: true,
+        confirmed: false,
+        guidance: declineGuidanceFor(organizationId, message),
+      };
+    }
   } catch (err: any) {
     // Mastra's modern-era replay elicitation signals "show the form" by
     // throwing this internal error out of sendRequest; the tools/call handler

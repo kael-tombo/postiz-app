@@ -131,7 +131,9 @@ The tool also asks the user to confirm through the MCP connection (elicitation) 
         if (confirm.asked && !confirm.confirmed) {
           return {
             output: {
-              errors: 'The user declined the settings update. No changes were made.',
+              errors: confirm.guidance
+                ? `The user declined the settings update. No changes were made. ${confirm.guidance}`
+                : 'The user declined the settings update. No changes were made.',
             },
           };
         }
