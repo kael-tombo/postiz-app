@@ -41,6 +41,14 @@ import { Logger } from '@nestjs/common';
 const MODE = (process.env.MCP_CONFIRM_MODE || 'on').toLowerCase();
 const CONFIRM_DISABLED = MODE === 'off' || MODE === 'false';
 
+// F30: under MCP_PROTOCOL_MODE=legacy the mounts dispatch EVERY request
+// through the 2025-era codec, so the replay elicitation cannot be carried
+// (attempting it surfaces as "Cannot request input ... the client on this
+// 2025-era connection did not declare the capability" and the write dies
+// instead of executing). The gate must mirror the dispatch: no gate at all
+// when the protocol switch forces legacy. (Same expression as start.mcp.ts.)
+const PROTOCOL_LEGACY = (process.env.MCP_PROTOCOL_MODE || 'auto').toLowerCase() === 'legacy';
+
 const CONFIRM_TIMEOUT_MS = (() => {
   const n = Number(process.env.MCP_CONFIRM_TIMEOUT_MS || 30000);
   return Number.isFinite(n) && n > 0 ? n : 30000;
@@ -182,7 +190,7 @@ export const confirmBatchWithUser = async (
   options: { hasNow?: boolean } = {}
 ): Promise<BatchConfirmDecision> => {
   const allAllowed = posts.map(() => true);
-  if (CONFIRM_DISABLED || posts.length < 2 || posts.length > MAX_BATCH_ITEMS) {
+  if (CONFIRM_DISABLED || PROTOCOL_LEGACY || posts.length < 2 || posts.length > MAX_BATCH_ITEMS) {
     // Single posts and oversized batches are handled by the caller's simple
     // confirmWithUser dialog instead.
     return { asked: false, allowed: allAllowed };
@@ -274,7 +282,7 @@ export const confirmWithUser = async (
   context: any,
   message: string
 ): Promise<ConfirmDecision> => {
-  if (CONFIRM_DISABLED) {
+  if (CONFIRM_DISABLED || PROTOCOL_LEGACY) {
     return { asked: false };
   }
 
