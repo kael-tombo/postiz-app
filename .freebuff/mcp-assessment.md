@@ -648,3 +648,39 @@ comment, LICENSE/copyright. 98 files swept with sed, zero stray refs left;
 public.component.tsx CLI/env tokens restored after the sweep. Battery
 re-run on the rebranded build: 398/398; analytics pin now asserts the live
 serverInfo name 'SocialFlow MCP'.
+
+## F25 — Failure-journey eval (round 17)
+`.freebuff/mcp-failure-journeys-test.mjs` (14 checks, score 8.0/8) walks
+the journeys that MUST fail and scores the refusal the way an agent
+experiences it: 1.0 = clean output.errors naming the state/blocker or
+pointing at the alternative tool, 0.5 = clean but vague, 0 = crash,
+dialog for a doomed call, or a silent success. Journeys: edit/settings/
+reschedule/re-queue on a PUBLISHED post, discovery + write on a DISABLED
+channel, bogus triggerTool methodName, and the safe-cleanup cancel on a
+disabled channel's post (the one doomed-looking call that MUST succeed
+after its confirmation - agents must be able to clean up). Findings:
+the postStatus republish hazard was real (F26 below); the disabled-
+channel schedule refusal was already perfect (J8 named the blocker and
+created no ghost post).
+
+## F26 — Republish guard + disabled-channel discovery + uniform trigger errors (round 17)
+- **postStatusTool republish guard**: 'schedule' (re-queue) on a PUBLISHED
+  or ERROR post used to pass the tool pre-flight and reach the service,
+  which flips state back to QUEUE - a silent republish hazard behind a
+  confirmation dialog. Now refused before the dialog: "This post is
+  already published - re-queueing it would publish the content again.
+  To publish new content, create a new post with the
+  integrationSchedulePostTool." Cancel to DRAFT stays open (safe cancel).
+- **freeDateTimeTool disabled pre-flight**: a slot for a disabled channel
+  is a doomed-discovery leak (the agent builds a schedule call that
+  cannot succeed). Refused with the integrationList hint before any slot
+  lookup.
+- **triggerTool error contract**: all refusals (unknown integration,
+  disabled channel, bogus methodName, refresh failures, provider errors)
+  now return output.errors instead of thrown message wrappers, matching
+  every other tool.
+
+### Seventeenth pass suites (2026-09-29)
+- `.freebuff/mcp-failure-journeys-test.mjs` — **14/14, 8.0/8 (new)**: see F25/F26
+- Full battery green (14 suites live): 14 + 24 + 9 + 93 + 40 + 43 + 14 + 17
+  + 28 + 16 + 18 + 33 + 22 + 41 = 412 assertions, 0 failures

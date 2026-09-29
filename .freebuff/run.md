@@ -142,6 +142,15 @@ and the orchestrator on :3002.
   deliberately reversible; sections B–C re-verify the F18/F22 "refuse
   doomed calls BEFORE the dialog" ordering on all five mutating post tools
   (raw resultType must NOT be input_required on a doomed call).
+- **Failure-journey eval (round 17)**:
+  `.freebuff/mcp-failure-journeys-test.mjs` (14 checks, score 8.0/8) — run
+  after ANY change to error messages, state guards, or the disabled-channel
+  handling. Journeys that must fail cleanly (published-post edits,
+  disabled-channel discovery/writes, bogus trigger methodName) score the
+  refusal an agent sees: 1.0 actionable (names the state/blocker or the
+  alternative tool), 0.5 vague, 0 crash/dialog-for-doomed/silent-success.
+  The safe-cleanup cancel of a dead-channel post must still SUCCEED after
+  its confirmation — never block cleanup.
 - **Cold-start agent eval (round 14)**:
   `.freebuff/mcp-cold-start-eval.mjs` (9 checks, score 5.0/5) plays a
   catalog-only agent through the schedule journey on a fresh org and scores
