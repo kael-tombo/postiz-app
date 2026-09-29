@@ -3,11 +3,15 @@ import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { Injectable } from '@nestjs/common';
 import { PostsService } from '@gitroom/nestjs-libraries/database/prisma/posts/posts.service';
+import { IntegrationService } from '@gitroom/nestjs-libraries/database/prisma/integrations/integration.service';
 import { checkAuth } from '@gitroom/nestjs-libraries/chat/auth.context';
 
 @Injectable()
 export class FreeDateTimeTool implements AgentToolInterface {
-  constructor(private _postsService: PostsService) {}
+  constructor(
+    private _postsService: PostsService,
+    private _integrationService: IntegrationService
+  ) {}
   name = 'freeDateTimeTool';
 
   run() {
@@ -51,6 +55,24 @@ Pass an integrationId to get the best slot for that specific channel.
         const organizationId = JSON.parse(
           (context?.requestContext as any)?.get('organization') as string
         ).id;
+
+        // Pre-flight: refuse a disabled channel BEFORE looking for a slot -
+        // a slot for a channel that cannot post is a doomed-discovery leak
+        // (the agent would build a schedule call that is guaranteed to fail).
+        if (inputData.integrationId) {
+          const integration = await this._integrationService.getIntegrationById(
+            organizationId,
+            inputData.integrationId
+          );
+          if (integration?.disabled) {
+            return {
+              output: {
+                errors:
+                  'This channel is disabled - it cannot receive posts until it is reconnected in SocialFlow. Check integrationList (skip disabled ones) or pick another channel.',
+              },
+            };
+          }
+        }
 
         try {
           const date = await this._postsService.findFreeDateTime(

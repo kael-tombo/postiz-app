@@ -56,7 +56,7 @@ export class IntegrationTriggerTool implements AgentToolInterface {
           z.record(z.string(), z.any()),
           z.string(),
         ]),
-      }),
+      }).or(z.object({ errors: z.string() })),
       execute: async (inputData, context) => {
         checkAuth(inputData, context);
         const organizationId = JSON.parse(
@@ -69,10 +69,23 @@ export class IntegrationTriggerTool implements AgentToolInterface {
             inputData.integrationId
           );
 
+        // Uniform error contract: every refusal comes back as
+        // output.errors, never as a thrown message wrapper.
         if (!getIntegration) {
-          throw new Error(
-            'Integration not found, use integrationList to get a valid integration id'
-          );
+          return {
+            output: {
+              errors:
+                'Integration not found, use integrationList to get a valid integration id',
+            },
+          };
+        }
+        if (getIntegration.disabled) {
+          return {
+            output: {
+              errors:
+                'This channel is disabled - reconnect it in SocialFlow before fetching provider data from it.',
+            },
+          };
         }
 
         const integrationProvider = socialIntegrationList.find(
@@ -80,9 +93,12 @@ export class IntegrationTriggerTool implements AgentToolInterface {
         )!;
 
         if (!integrationProvider) {
-          throw new Error(
-            'Integration provider not found, use integrationList to get a valid integration id'
-          );
+          return {
+            output: {
+              errors:
+                'Integration provider not found, use integrationList to get a valid integration id',
+            },
+          };
         }
 
         const tools = this._integrationManager.getAllTools();
@@ -94,9 +110,11 @@ export class IntegrationTriggerTool implements AgentToolInterface {
           // @ts-ignore
           !integrationProvider[inputData.methodName]
         ) {
-          throw new Error(
-            `Method "${inputData.methodName}" not found for this integration, use integrationSchema to get the callable tools`
-          );
+          return {
+            output: {
+              errors: `Method "${inputData.methodName}" not found for this integration, use integrationSchema to get the callable tools`,
+            },
+          };
         }
 
         let refreshed = false;
@@ -129,9 +147,12 @@ export class IntegrationTriggerTool implements AgentToolInterface {
                   organizationId,
                   getIntegration
                 );
-                throw new Error(
-                  'The channel was disconnected because its token expired, the user needs to reconnect it in SocialFlow'
-                );
+                return {
+                  output: {
+                    errors:
+                      'The channel was disconnected because its token expired, the user needs to reconnect it in SocialFlow',
+                  },
+                };
               }
 
               const { accessToken } = data;
@@ -148,18 +169,23 @@ export class IntegrationTriggerTool implements AgentToolInterface {
             }
 
             if (err instanceof RefreshToken) {
-              throw new Error(
-                'The provider rejected the credentials even after refreshing the token, the user needs to reconnect the channel in SocialFlow'
-              );
+              return {
+                output: {
+                  errors:
+                    'The provider rejected the credentials even after refreshing the token, the user needs to reconnect the channel in SocialFlow',
+                },
+              };
             }
 
-            throw new Error(
-              `Provider call failed: ${
-                err instanceof Error && err.message
-                  ? err.message
-                  : 'unexpected error'
-              }`
-            );
+            return {
+              output: {
+                errors: `Provider call failed: ${
+                  err instanceof Error && err.message
+                    ? err.message
+                    : 'unexpected error'
+                }`,
+              },
+            };
           }
         }
       },

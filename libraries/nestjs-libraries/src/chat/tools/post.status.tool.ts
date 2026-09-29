@@ -85,6 +85,20 @@ If validation fails, the result contains output.errors describing what to fix; t
             },
           };
         }
+        // Republish hazard: re-queueing a PUBLISHED (or ERROR) post would
+        // publish the content again. Only the safe cancel to DRAFT may pass.
+        if (
+          inputData.status === 'schedule' &&
+          root.state !== 'QUEUE' &&
+          root.state !== 'DRAFT'
+        ) {
+          return {
+            output: {
+              errors:
+                'This post is already published - re-queueing it would publish the content again. To publish new content, create a new post with the integrationSchedulePostTool.',
+            },
+          };
+        }
 
         // Confirm the status change with the user over MCP elicitation
         // (modern-era hosts that declared the capability; no-op otherwise).
