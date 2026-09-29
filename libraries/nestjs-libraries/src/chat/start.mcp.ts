@@ -130,7 +130,7 @@ export const startMcp = async (app: INestApplication) => {
   // them in the system prompt). Kept short and operational - the detailed
   // teaching lives in the per-tool descriptions.
   const serverInstructions = `
-Postiz schedules and manages social media posts across the connected channels (integrations) of one organization.
+SocialFlow schedules and manages social media posts across the connected channels (integrations) of one organization.
 Typical loops:
 - Discover: integrationList (channels, skip disabled ones) -> integrationSchema (per-platform rules and settings ids) -> groupList to partition channels.
 - Plan: freeDateTimeTool for a slot when the user gives no exact time, mediaListTool to reuse existing media before generating new one.
@@ -140,7 +140,7 @@ Rules that matter: posts can never be deleted (cancel to draft instead); content
 `;
 
   const serverConfig = {
-    name: 'Postiz MCP',
+    name: 'SocialFlow MCP',
     version: '1.0.0',
     tools,
     // No `agents` here: Mastra would expose the chat agent as an
@@ -159,7 +159,7 @@ Rules that matter: posts can never be deleted (cancel to draft instead); content
   // exposed as an annotation-less catch-all ask_postiz tool, which the
   // ChatGPT and Claude directory reviews reject
   const oauthServer = new MCPServer({
-    name: 'Postiz MCP',
+    name: 'SocialFlow MCP',
     version: '1.0.0',
     tools,
     appResources,
@@ -171,7 +171,7 @@ Rules that matter: posts can never be deleted (cancel to draft instead); content
   const { [CLIPPING_WIDGET_URI]: hiddenWidget, ...claudeAppResources } = appResources as Record<string, (typeof appResources)[typeof UPLOAD_WIDGET_URI]>;
 
   const claudeOauthServer = new MCPServer({
-    name: 'Postiz MCP',
+    name: 'SocialFlow MCP',
     version: '1.0.0',
     tools: claudeTools,
     appResources: claudeAppResources,

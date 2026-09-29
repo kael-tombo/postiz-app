@@ -127,7 +127,7 @@ r = await api('POST', '/mcp', {
 });
 const sessionId = r.sessionId;
 check('initialize', r.status === 200 && !!r.json?.result?.serverInfo, `status ${r.status} ${r.text.slice(0, 120)}`);
-check('server is Postiz MCP', r.json?.result?.serverInfo?.name === 'Postiz MCP', JSON.stringify(r.json?.result?.serverInfo));
+check('server is SocialFlow MCP', r.json?.result?.serverInfo?.name === 'SocialFlow MCP', JSON.stringify(r.json?.result?.serverInfo));
 
 await api('POST', '/mcp', { apiKey, sessionId, body: rpc('notifications/initialized', undefined, true) });
 

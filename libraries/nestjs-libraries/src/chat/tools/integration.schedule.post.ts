@@ -92,7 +92,7 @@ The tool also asks the user to confirm the batch through the MCP connection (eli
               shortLink: z
                 .boolean()
                 .describe(
-                  'If the post contains a link, true lets Postiz shorten it through the organization\'s short-link provider'
+                  'If the post contains a link, true lets SocialFlow shorten it through the organization\'s short-link provider'
                 ),
               type: z
                 .enum(['draft', 'schedule', 'now'])
@@ -233,7 +233,7 @@ The tool also asks the user to confirm the batch through the MCP connection (eli
           if (integration.disabled) {
             return {
               output: {
-                errors: `The channel "${integration.name}" (${integration.providerIdentifier}) is disabled - it cannot receive posts until it is reconnected in the Postiz app.`,
+                errors: `The channel "${integration.name}" (${integration.providerIdentifier}) is disabled - it cannot receive posts until it is reconnected in the SocialFlow app.`,
               },
             };
           }

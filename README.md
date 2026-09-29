@@ -1,8 +1,8 @@
 <p align="center">
-  <a href="https://postiz.com/" target="_blank">
+  <a href="https://socialflow.ai/" target="_blank">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/765e9d72-3ee7-4a56-9d59-a2c9befe2311">
-    <img alt="Postiz Logo" src="https://github.com/user-attachments/assets/f0d30d70-dddb-4142-8876-e9aa6ed1cb99" width="280"/>
+    <img alt="SocialFlow Logo" src="https://github.com/user-attachments/assets/f0d30d70-dddb-4142-8876-e9aa6ed1cb99" width="280"/>
   </picture>
   </a>
 </p>
@@ -15,15 +15,15 @@
 
 <div align="center">
   <strong>
-    <a href="https://postiz.com">Postiz</a> is a social media management platform for scheduling, automating, and analyzing your content.
+    <a href="https://socialflow.ai">SocialFlow</a> is a social media management platform for scheduling, automating, and analyzing your content.
     
-  Use Postiz Cloud for a fully managed experience, or deploy the open-source edition on your own infrastructure.
+  Use SocialFlow Cloud for a fully managed experience, or deploy the open-source edition on your own infrastructure.
   </strong>
 </div>
 
 <p align="center">
   <br />
-  <a href="https://docs.postiz.com" rel="dofollow"><strong>Explore the docs »</strong></a>
+  <a href="https://docs.socialflow.ai" rel="dofollow"><strong>Explore the docs »</strong></a>
   <br />
 
   <br />
@@ -32,11 +32,11 @@
 </p>
 
 <p align="center">
-  <a href="https://platform.postiz.com">Register</a>
+  <a href="https://platform.socialflow.ai">Register</a>
   ·
-  <a href="https://discord.postiz.com">Join Our Discord (devs only)</a>
+  <a href="https://discord.socialflow.ai">Join Our Discord (devs only)</a>
   ·
-  <a href="https://docs.postiz.com/public-api">Public API</a><br />
+  <a href="https://docs.socialflow.ai/public-api">Public API</a><br />
 </p>
 <p align="center">
   <a href="https://www.npmjs.com/package/@postiz/node">NodeJS SDK</a>
@@ -50,48 +50,48 @@
 
 <p align="center"><strong>Schedule posts to:</strong></p>
 <div class="flex" align="center">
-  <img alt="Instagram" src="https://postiz.com/svgs/socials/Instagram.svg" width="32">
-  <img alt="Youtube" src="https://postiz.com/svgs/socials/Youtube.svg" width="32">
-  <img alt="Dribbble" src="https://postiz.com/svgs/socials/Dribbble.svg" width="32">
-  <img alt="Linkedin" src="https://postiz.com/svgs/socials/Linkedin.svg" width="32">
-  <img alt="Reddit" src="https://postiz.com/svgs/socials/Reddit.svg" width="32">
-  <img alt="TikTok" src="https://postiz.com/svgs/socials/TikTok.svg" width="32">
-  <img alt="Facebook" src="https://postiz.com/svgs/socials/Facebook.svg" width="32">
-  <img alt="Pinterest" src="https://postiz.com/svgs/socials/Pinterest.svg" width="32">
-  <img alt="Threads" src="https://postiz.com/svgs/socials/Threads.svg" width="32">
-  <img alt="X" src="https://postiz.com/svgs/socials/X.svg" width="32">
-  <img alt="Slack" src="https://postiz.com/svgs/socials/Slack.svg" width="32">
-  <img alt="Discord" src="https://postiz.com/svgs/socials/Discord.svg" width="32">
-  <img alt="Mastodon" src="https://postiz.com/svgs/socials/Mastodon.svg" width="32">
-  <img alt="Bluesky" src="https://postiz.com/svgs/socials/Bluesky.svg" width="32">
+  <img alt="Instagram" src="https://socialflow.ai/svgs/socials/Instagram.svg" width="32">
+  <img alt="Youtube" src="https://socialflow.ai/svgs/socials/Youtube.svg" width="32">
+  <img alt="Dribbble" src="https://socialflow.ai/svgs/socials/Dribbble.svg" width="32">
+  <img alt="Linkedin" src="https://socialflow.ai/svgs/socials/Linkedin.svg" width="32">
+  <img alt="Reddit" src="https://socialflow.ai/svgs/socials/Reddit.svg" width="32">
+  <img alt="TikTok" src="https://socialflow.ai/svgs/socials/TikTok.svg" width="32">
+  <img alt="Facebook" src="https://socialflow.ai/svgs/socials/Facebook.svg" width="32">
+  <img alt="Pinterest" src="https://socialflow.ai/svgs/socials/Pinterest.svg" width="32">
+  <img alt="Threads" src="https://socialflow.ai/svgs/socials/Threads.svg" width="32">
+  <img alt="X" src="https://socialflow.ai/svgs/socials/X.svg" width="32">
+  <img alt="Slack" src="https://socialflow.ai/svgs/socials/Slack.svg" width="32">
+  <img alt="Discord" src="https://socialflow.ai/svgs/socials/Discord.svg" width="32">
+  <img alt="Mastodon" src="https://socialflow.ai/svgs/socials/Mastodon.svg" width="32">
+  <img alt="Bluesky" src="https://socialflow.ai/svgs/socials/Bluesky.svg" width="32">
 </div>
 
 <p align="center"><strong>With your favorite AI agent:</strong></p>
 <div class="flex" align="center">
-  <a href="https://postiz.com/chatgpt" title="ChatGPT"><img alt="ChatGPT" src=".github/agents/chatgpt.svg" width="32"></a>
-  <a href="https://postiz.com/claude" title="Claude"><img alt="Claude" src=".github/agents/claude.svg" width="32"></a>
-  <a href="https://postiz.com/claude-code" title="Claude Code"><img alt="Claude Code" src=".github/agents/claude-code.svg" width="32"></a>
-  <a href="https://postiz.com/codex" title="Codex"><img alt="Codex" src=".github/agents/codex.svg" width="32"></a>
-  <a href="https://postiz.com/cursor" title="Cursor"><img alt="Cursor" src=".github/agents/cursor.svg" width="32"></a>
-  <a href="https://postiz.com/openclaw" title="OpenClaw"><img alt="OpenClaw" src=".github/agents/openclaw.svg" width="32"></a>
-  <a href="https://postiz.com/hermes" title="Hermes Agent"><img alt="Hermes Agent" src=".github/agents/hermes-agent.svg" width="32"></a>
-  <a href="https://postiz.com/grok-bot" title="Grok Bot"><img alt="Grok Bot" src=".github/agents/grok-bot.svg" width="32"></a>
-  <a href="https://postiz.com/grok-build" title="Grok Build"><img alt="Grok Build" src=".github/agents/grok-build.svg" width="32"></a>
-  <a href="https://postiz.com/muse" title="Muse"><img alt="Muse" src=".github/agents/muse.svg" width="32"></a>
-  <a href="https://postiz.com/perplexity-computer" title="Perplexity Computer"><img alt="Perplexity Computer" src=".github/agents/perplexity-computer.svg" width="32"></a>
-  <a href="https://postiz.com/nanoclaw" title="nanoclaw"><img alt="nanoclaw" src=".github/agents/nanoclaw.svg" width="32"></a>
-  <a href="https://postiz.com/paperclip" title="Paperclip"><img alt="Paperclip" src=".github/agents/paperclip.svg" width="32"></a>
-  <a href="https://postiz.com/mcp" title="MCP Server"><img alt="MCP Server" src=".github/agents/mcp-server.svg" width="32"></a>
-  <a href="https://postiz.com/agent" title="AI Agents CLI"><img alt="AI Agents CLI" src=".github/agents/ai-agents-cli.svg" width="32"></a>
+  <a href="https://socialflow.ai/chatgpt" title="ChatGPT"><img alt="ChatGPT" src=".github/agents/chatgpt.svg" width="32"></a>
+  <a href="https://socialflow.ai/claude" title="Claude"><img alt="Claude" src=".github/agents/claude.svg" width="32"></a>
+  <a href="https://socialflow.ai/claude-code" title="Claude Code"><img alt="Claude Code" src=".github/agents/claude-code.svg" width="32"></a>
+  <a href="https://socialflow.ai/codex" title="Codex"><img alt="Codex" src=".github/agents/codex.svg" width="32"></a>
+  <a href="https://socialflow.ai/cursor" title="Cursor"><img alt="Cursor" src=".github/agents/cursor.svg" width="32"></a>
+  <a href="https://socialflow.ai/openclaw" title="OpenClaw"><img alt="OpenClaw" src=".github/agents/openclaw.svg" width="32"></a>
+  <a href="https://socialflow.ai/hermes" title="Hermes Agent"><img alt="Hermes Agent" src=".github/agents/hermes-agent.svg" width="32"></a>
+  <a href="https://socialflow.ai/grok-bot" title="Grok Bot"><img alt="Grok Bot" src=".github/agents/grok-bot.svg" width="32"></a>
+  <a href="https://socialflow.ai/grok-build" title="Grok Build"><img alt="Grok Build" src=".github/agents/grok-build.svg" width="32"></a>
+  <a href="https://socialflow.ai/muse" title="Muse"><img alt="Muse" src=".github/agents/muse.svg" width="32"></a>
+  <a href="https://socialflow.ai/perplexity-computer" title="Perplexity Computer"><img alt="Perplexity Computer" src=".github/agents/perplexity-computer.svg" width="32"></a>
+  <a href="https://socialflow.ai/nanoclaw" title="nanoclaw"><img alt="nanoclaw" src=".github/agents/nanoclaw.svg" width="32"></a>
+  <a href="https://socialflow.ai/paperclip" title="Paperclip"><img alt="Paperclip" src=".github/agents/paperclip.svg" width="32"></a>
+  <a href="https://socialflow.ai/mcp" title="MCP Server"><img alt="MCP Server" src=".github/agents/mcp-server.svg" width="32"></a>
+  <a href="https://socialflow.ai/agent" title="AI Agents CLI"><img alt="AI Agents CLI" src=".github/agents/ai-agents-cli.svg" width="32"></a>
 </div>
 
 <br />
 
-## 🔌 See the leading Postiz features
+## 🔌 See the leading SocialFlow features
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=BdsCVvEYgHU" target="_blank">
-    <img alt="Postiz" src="https://github.com/user-attachments/assets/8b9b7939-da1a-4be5-95be-42c6fce772de" />
+    <img alt="SocialFlow" src="https://github.com/user-attachments/assets/8b9b7939-da1a-4be5-95be-42c6fce772de" />
   </a>
 </p>
 
@@ -130,32 +130,32 @@
 
 ## Quick Start
 
-To have the project up and running, please follow the [Quick Start Guide](https://docs.postiz.com/quickstart)
+To have the project up and running, please follow the [Quick Start Guide](https://docs.socialflow.ai/quickstart)
 
-## Sponsor Postiz
+## Sponsor SocialFlow
 
-We now offer a few options to sponsor Postiz:
+We now offer a few options to sponsor SocialFlow:
 - Just a donation: You like what we are building, and want to buy us some coffee so we can build faster.
-- Main repository: Get your logo with a backlink from the main Postiz repository. Postiz has over 7M downloads and 20k views per month.
+- Main repository: Get your logo with a backlink from the main SocialFlow repository. SocialFlow has over 7M downloads and 20k views per month.
 
 Link: https://opencollective.com/postiz
 
  <br />
   <br />
 
-## Postiz Cloud vs. Open-source
+## SocialFlow Cloud vs. Open-source
 
-Choose [Postiz Cloud](https://postiz.com/) for a fully managed experience, or deploy Postiz Open-source on your own infrastructure. Both provide the same core Postiz product and features.
+Choose [SocialFlow Cloud](https://socialflow.ai/) for a fully managed experience, or deploy SocialFlow Open-source on your own infrastructure. Both provide the same core SocialFlow product and features.
 
 We do not "gate" features or limit the license.
 
 The main difference is the infrastructure you need to own, approval from social media providers, and deployment that might be hard at times (let your LLM deploy it)
 
-| Area | Postiz Cloud | Postiz Open-source (self-hosted) |
+| Area | SocialFlow Cloud | SocialFlow Open-source (self-hosted) |
 |---|---|---|
 | **Cost** | Subscription per plan, 7-day free trial | Free forever (AGPL-3.0); you pay only for your own infra |
 | **Setup time** | Sign up and connect channels in minutes | Deploy with Docker / Coolify / Railway / any VPS; you configure Postgres, Redis, storage and env vars |
-| **Hosting & data** | Hosted by Postiz; data stored in our infrastructure | Runs on your own server; data never leaves your environment |
+| **Hosting & data** | Hosted by SocialFlow; data stored in our infrastructure | Runs on your own server; data never leaves your environment |
 | **Social platform apps** | Pre-approved apps for every channel, ready to use | You create your own developer apps on each platform and go through their approval (Meta, YouTube, TikTok can take weeks) |
 | **Channels** | Limited by plan tier | Unlimited, every supported provider |
 | **Posts per month** | Limited by plan tier | Unlimited |
@@ -163,29 +163,29 @@ The main difference is the infrastructure you need to own, approval from social 
 | **Scheduling, calendar views, cross-posting, repeated posts, post comments & delays, sets, signatures** | Included | Included |
 | **Internal & Global Plugs, RSS auto-post, customer groups** | Included per plan | Included |
 | **Analytics** | Included per plan | Included (requires your own app credentials with analytics scopes) |
-| **AI Copilot, AI images, AI videos** | Included with monthly quotas per plan; keys managed by Postiz | Available if you bring your own OpenAI (and other provider) API keys; no quota, you pay the provider |
+| **AI Copilot, AI images, AI videos** | Included with monthly quotas per plan; keys managed by SocialFlow | Available if you bring your own OpenAI (and other provider) API keys; no quota, you pay the provider |
 | **AI video clipping** | Included with monthly clipping minutes per plan | Requires your own provider keys and extra configuration |
 | **Smart Agent** | Included per plan | Available with your own LLM key |
 | **Public API & webhooks** | Included per plan | Included |
 | **Agentic surfaces (MCP, CLI, Claude / ChatGPT / Codex / OpenClaw / Cursor connectors)** | Included, hosted MCP endpoint | Included, you point the MCP / CLI at your own instance |
 | **Custom integrations** | Included per plan | Included; you can also modify the code and add providers |
 | **Updates & maintenance** | Automatic, zero downtime for you | You pull new images and run migrations yourself |
-| **Uptime, backups, security patches** | Managed by Postiz | Your responsibility |
+| **Uptime, backups, security patches** | Managed by SocialFlow | Your responsibility |
 | **Support** | Priority support via Discord / email per plan | Community support on Discord and GitHub |
 | **Source access & customization** | No (SaaS) | Full source code, fork and modify freely under AGPL |
-| **Compliance / data residency** | Postiz-controlled regions | Any region or air-gapped environment you choose |
+| **Compliance / data residency** | SocialFlow-controlled regions | Any region or air-gapped environment you choose |
 
 <br />
 <br />
   
-## Postiz Compliance
+## SocialFlow Compliance
 
-- This GitHub repository contains the open-source, self-hosted edition of Postiz. Postiz is also available as Postiz Cloud, a fully managed service at postiz.com.
-- Postiz hosted service uses official, platform-approved OAuth flows.
-- Postiz does not automate or scrape content from social media platforms.
-- Postiz does not collect, store, or proxy API keys or access tokens from users.
-- Postiz never asks users to paste API keys into our hosted product.
-- Postiz users always authenticate directly with the social platform (e.g., X, Discord, etc.), ensuring platform compliance and data privacy.
+- This GitHub repository contains the open-source, self-hosted edition of SocialFlow. SocialFlow is also available as SocialFlow Cloud, a fully managed service at socialflow.ai.
+- SocialFlow hosted service uses official, platform-approved OAuth flows.
+- SocialFlow does not automate or scrape content from social media platforms.
+- SocialFlow does not collect, store, or proxy API keys or access tokens from users.
+- SocialFlow never asks users to paste API keys into our hosted product.
+- SocialFlow users always authenticate directly with the social platform (e.g., X, Discord, etc.), ensuring platform compliance and data privacy.
 
 ## License
 

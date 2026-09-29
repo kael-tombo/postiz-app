@@ -71,7 +71,7 @@ export class ThreadsProvider extends SocialAbstract implements SocialProvider {
       return {
         type: 'bad-body',
         value:
-          "One of the media URLs is invalid or inaccessible, make sure it's being uploaded to Postiz first",
+          "One of the media URLs is invalid or inaccessible, make sure it's being uploaded to SocialFlow first",
       };
     }
     if (body.includes('4279009')) {

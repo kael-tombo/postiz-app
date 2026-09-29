@@ -634,3 +634,17 @@ cold-start-eval / guidance / method-matrix / modern-cert updated to the
 - `.freebuff/mcp-annotations-test.mjs` — **24/24 (new)**: see F23/F24
 - Full battery green (13 suites live): 24 + 9 + 93 + 40 + 43 + 14 + 17 + 28
   + 16 + 18 + 33 + 22 + 41 = 398 assertions, 0 failures
+
+## Round 16 — rebrand to SocialFlow (socialflow.ai)
+Fork renamed: user-facing strings Postiz→SocialFlow, postiz.com→socialflow.ai
+(user placeholder emails, agencies links, extension host matches, Plausible
+analytics domain, README/docs), generic-OAuth env family POSTIZ_*→
+SOCIALFLOW_* (code + .env.example; local .env never set them - zero
+migration cost). Deliberately KEPT: published npm artifact names (the
+`postiz` CLI, the POSTIZ_API_KEY contract the CLI reads, the
+`gitroomhq/postiz-agent` skill, @postiz/node), mastra internal ids ('postiz'
+agent, ui://postiz widgets, ask_postiz comments), RevenueCat product-id
+comment, LICENSE/copyright. 98 files swept with sed, zero stray refs left;
+public.component.tsx CLI/env tokens restored after the sweep. Battery
+re-run on the rebranded build: 398/398; analytics pin now asserts the live
+serverInfo name 'SocialFlow MCP'.

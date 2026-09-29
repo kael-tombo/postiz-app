@@ -56,7 +56,7 @@ Large windows can hold many posts: the result is paginated - walk it with "page"
 Each item has an "id", its publish date, state, content, media attachments, channel, current provider settings and the full threadParts list (main post plus comments/thread replies).
 A non-null "error" on an ERROR post explains why publishing failed. PUBLISHED posts carry "publishedUrl" - the live link on the platform.
 "creationMethod" tells you how the post was made (MCP, DASHBOARD, API, AGENT...). "intervalInDays" marks recurring posts - they repeat every N days and appear as several items; edits to one repeat do not touch the others.
-Posts cannot be deleted through the Postiz tools - if the user wants to delete a post, tell them to do it themselves in the Postiz app; never offer to delete a post.
+Posts cannot be deleted through the SocialFlow tools - if the user wants to delete a post, tell them to do it themselves in the SocialFlow app; never offer to delete a post.
 To inspect ONE post by id (instead of paging through windows), use the postDetails tool.
 `,
       inputSchema: z.object({

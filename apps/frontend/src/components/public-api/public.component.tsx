@@ -22,7 +22,7 @@ export const remoteMcpClients = {
 } as const;
 
 // Official one-click connectors listed in the assistants' directories.
-// Only for the hosted Postiz (billingEnabled), they point at the public MCP server.
+// Only for the hosted SocialFlow (billingEnabled), they point at the public MCP server.
 export const mcpConnectorUrls = {
   Claude: 'https://claude.ai/directory/postiz',
   ChatGPT:
@@ -35,7 +35,7 @@ export const mcpConnectorUrls = {
 // the agent installs the CLI itself and asks you for the API key
 export const chatOnlyMcpClients = {
   'Grok Bot':
-    'Install the Postiz CLI with `npm install -g postiz`, then install the Postiz skill with `npx skills add gitroomhq/postiz-agent`. Ask me for my Postiz API key and set it as the POSTIZ_API_KEY environment variable before using the CLI.',
+    'Install the SocialFlow CLI with `npm install -g postiz`, then install the SocialFlow skill with `npx skills add gitroomhq/postiz-agent`. Ask me for my SocialFlow API key and set it as the POSTIZ_API_KEY environment variable before using the CLI.',
 } as const;
 
 export const mcpClients = [
@@ -57,7 +57,7 @@ export type ChatOnlyMcpClient = keyof typeof chatOnlyMcpClients;
 export type McpClient = (typeof mcpClients)[number];
 export type AnyMcpClient = RemoteMcpClient | ChatOnlyMcpClient | McpClient;
 
-// oauth: no API key, the client registers itself (DCR) and the user signs in to Postiz
+// oauth: no API key, the client registers itself (DCR) and the user signs in to SocialFlow
 // apikey: the organization API key, as a Bearer header (or inside the URL for remote clients)
 export type McpAuth = 'oauth' | 'apikey';
 
@@ -156,7 +156,7 @@ export const getMcpConfig = (
       case 'NanoClaw':
         return {
           config: `ncl groups config add-mcp-server --id <group-id> --name postiz --url ${oauthUrl}`,
-          hint: 'Run this in your terminal, replace <group-id> with the agent group that should get Postiz.',
+          hint: 'Run this in your terminal, replace <group-id> with the agent group that should get SocialFlow.',
         };
     }
   }
@@ -255,7 +255,7 @@ export const getMcpConfig = (
       // No headers flag, the key travels inside the URL like remote clients
       return {
         config: `ncl groups config add-mcp-server --id <group-id> --name postiz --url ${mcpBase}/mcp/${apiKey}`,
-        hint: 'Run this in your terminal, replace <group-id> with the agent group that should get Postiz.',
+        hint: 'Run this in your terminal, replace <group-id> with the agent group that should get SocialFlow.',
       };
   }
 };
@@ -337,7 +337,7 @@ const McpSection = ({
           <div className="text-[13px] text-customColor18 mt-[2px]">
             {t(
               'connect_your_mcp_client_to_postiz_to_schedule_your_posts_faster',
-              'Connect Postiz MCP server to your client (Http streaming) to schedule your posts faster.'
+              'Connect SocialFlow MCP server to your client (Http streaming) to schedule your posts faster.'
             )}
           </div>
         </div>
@@ -364,7 +364,7 @@ const McpSection = ({
           )}
           <a
             className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
-            href="https://docs.postiz.com/mcp/introduction"
+            href="https://docs.socialflow.ai/mcp/introduction"
             target="_blank"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
@@ -392,7 +392,7 @@ const McpSection = ({
                   onClick={() => setAuth(m)}
                 >
                   {m === 'oauth'
-                    ? t('sign_in_no_api_key', 'Sign in with Postiz (no API key)')
+                    ? t('sign_in_no_api_key', 'Sign in with SocialFlow (no API key)')
                     : t('api_key', 'API Key')}
                 </button>
               ))}
@@ -435,7 +435,7 @@ const McpSection = ({
               !chatOnly &&
               ` ${t(
                 'oauth_sign_in_hint',
-                'Your agent will open a browser window to sign in to Postiz.'
+                'Your agent will open a browser window to sign in to SocialFlow.'
               )}`}
           </div>
           <pre className="bg-newBgColorInner border border-newBorder rounded-[8px] p-[16px] text-[13px] whitespace-pre-wrap break-all overflow-x-auto leading-[1.6]">
@@ -525,7 +525,7 @@ export const localCliSteps = [
     code: 'postiz auth:login',
   },
   {
-    label: 'Install the Postiz skill for your AI agent',
+    label: 'Install the SocialFlow skill for your AI agent',
     code: 'npx skills add gitroomhq/postiz-agent',
   },
 ] as const;
@@ -540,7 +540,7 @@ const ciCliSteps = [
     code: 'export POSTIZ_API_KEY="{API_KEY}"',
   },
   {
-    label: 'Install the Postiz skill for your AI agent',
+    label: 'Install the SocialFlow skill for your AI agent',
     code: 'npx skills add gitroomhq/postiz-agent',
   },
 ] as const;
@@ -579,14 +579,14 @@ const CliSection = ({ apiKey }: { apiKey: string }) => {
           <div className="text-[13px] text-customColor18 mt-[2px]">
             {t(
               'cli_description',
-              'Use the Postiz CLI to automate posting from your terminal, or install the skill to let your AI agent schedule posts for you.'
+              'Use the SocialFlow CLI to automate posting from your terminal, or install the skill to let your AI agent schedule posts for you.'
             )}
           </div>
         </div>
         <div className="flex gap-[6px] shrink-0 pt-[2px]">
           <a
             className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
-            href="https://docs.postiz.com/cli/introduction"
+            href="https://docs.socialflow.ai/cli/introduction"
             target="_blank"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
@@ -713,7 +713,7 @@ const PublicApiContent = () => {
         <br />
         {t(
           'api_auth_note_line2',
-          'If you are building a product that schedules posts on behalf of other Postiz users,'
+          'If you are building a product that schedules posts on behalf of other SocialFlow users,'
         )}
         <br />
         {t(
@@ -735,14 +735,14 @@ const PublicApiContent = () => {
             <div className="text-[13px] text-customColor18 mt-[2px]">
               {t(
                 'use_postiz_api_to_integrate_with_your_tools',
-                'Use Postiz API to integrate with your tools.'
+                'Use SocialFlow API to integrate with your tools.'
               )}
             </div>
           </div>
           <div className="flex gap-[6px] shrink-0 pt-[2px]">
             <a
               className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
-              href="https://docs.postiz.com/public-api"
+              href="https://docs.socialflow.ai/public-api"
               target="_blank"
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>

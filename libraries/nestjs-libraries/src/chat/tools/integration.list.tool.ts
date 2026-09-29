@@ -43,7 +43,7 @@ export class IntegrationListTool implements AgentToolInterface {
             disabled: z
               .boolean()
               .describe(
-                'When true the channel is disabled - never schedule to it, tell the user to reconnect it in the Postiz app'
+                'When true the channel is disabled - never schedule to it, tell the user to reconnect it in the SocialFlow app'
               ),
             display: z
               .string()
