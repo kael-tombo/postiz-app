@@ -162,6 +162,17 @@ and the orchestrator on :3002.
   decline of the SAME action (org + normalized message, 10-min TTL)
   carries the "do not keep retrying" guidance; acceptance after declines
   still works; different actions start fresh.
+- **Kill-switch verification (round 19)**:
+  `.freebuff/mcp-kill-switch-test.mjs` is mode-aware (PROBE_MODE env) and
+  must be run against THREE separate backend starts: baseline (no env),
+  `MCP_CONFIRM_MODE=off node .freebuff/start-backend.mjs`, and
+  `MCP_PROTOCOL_MODE=legacy node .freebuff/start-backend.mjs` — each with
+  its matching PROBE_MODE (the launcher passes exported env through).
+  Contract: input_required ONLY on baseline; under either switch modern
+  writes EXECUTE immediately; pre-flights and the legacy-session path
+  hold everywhere. If legacy mode ever regresses to dying with "Cannot
+  request input 'mastra_elicit_0'", see F30: the gate must mirror the
+  dispatch switch (PROTOCOL_LEGACY check in confirm.elicit.ts).
 - **Cold-start agent eval (round 14)**:
   `.freebuff/mcp-cold-start-eval.mjs` (9 checks, score 5.0/5) plays a
   catalog-only agent through the schedule journey on a fresh org and scores

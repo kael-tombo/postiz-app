@@ -714,3 +714,34 @@ are recorded too (guidance rides the per-post declined path).
 - `.freebuff/mcp-hints-deep-test.mjs` — **12/12 (new)**: see F27/F28
 - Full battery green (15 suites live): 12 + 14 + 24 + 9 + 93 + 40 + 43 +
   14 + 17 + 28 + 16 + 18 + 33 + 22 + 41 = 424 assertions, 0 failures
+
+## F29 — Kill-switch verification (round 19)
+`.freebuff/mcp-kill-switch-test.mjs` is a mode-aware probe (PROBE_MODE
+env) run against THREE backend restarts: baseline (both envs unset),
+MCP_CONFIRM_MODE=off, MCP_PROTOCOL_MODE=legacy. Contract per mode: the
+modern write's first round must be input_required ONLY on baseline; under
+either switch it must EXECUTE immediately (pre-gate behavior); pre-flight
+refusals and the legacy-era session path stay intact in all modes; the
+legacy initialize contract (serverInfo, no session id on stateless JSON)
+holds in all modes. Matrix result: baseline 8/8, confirm-off 8/8,
+protocol-legacy 8/8 on the fixed build. The probe also discriminates
+correctly: run with a mismatched PROBE_MODE against a baseline server,
+the gate-dependent checks fail as expected (behavior follows the
+SERVER's env, not the probe's).
+
+## F30 — Protocol-legacy killed gated writes (round 19, found by F29)
+Under MCP_PROTOCOL_MODE=legacy the mounts dispatch EVERY request through
+the 2025-era codec, but the confirmation gate only looked at the
+per-request envelope keys - which the modern CLIENT still sends. The gate
+attempted a replay elicitation the legacy dispatch cannot carry and the
+write DIED with "Cannot request input 'mastra_elicit_0' (elicitation/
+create): the client on this 2025-era connection did not declare the
+capability". Fix: confirm.elicit.ts now mirrors the dispatch switch
+(MCP_PROTOCOL_MODE=legacy -> no gate at all, like CONFIRM_MODE=off), so
+legacy mode restores the true pre-dual-era behavior: writes execute,
+no elicitation is ever attempted.
+
+### Nineteenth pass suites (2026-09-29)
+- `.freebuff/mcp-kill-switch-test.mjs` — **8/8 in all three server modes (new)**: see F29/F30
+- Full battery green (16 suites live): 8 + 12 + 14 + 24 + 9 + 93 + 40 + 43
+  + 14 + 17 + 28 + 16 + 18 + 33 + 22 + 41 = 432 assertions, 0 failures
