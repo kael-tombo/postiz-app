@@ -684,3 +684,33 @@ created no ghost post).
 - `.freebuff/mcp-failure-journeys-test.mjs` — **14/14, 8.0/8 (new)**: see F25/F26
 - Full battery green (14 suites live): 14 + 24 + 9 + 93 + 40 + 43 + 14 + 17
   + 28 + 16 + 18 + 33 + 22 + 41 = 412 assertions, 0 failures
+
+## F27 — Hints deep audit of the non-post tools (round 18)
+`.freebuff/mcp-hints-deep-test.mjs` pins the audited hints table for the
+10 non-post tools that are always cataloged (generateImage/Video false on
+all but openWorld; generateVideoOptions (sic - no Tool suffix),
+videoFunction, videoStatus, uploadWidgetStatus, mediaList readOnly;
+uploadWidget + its ticket non-idempotent mints; uploadFromUrl
+openWorld) and asserts the three clipping tools are correctly ABSENT
+when UploadFactory.clippingEnabled() is false (local dev). LIVE
+idempotency probes: uploading the SAME url twice creates two media rows
+(idempotent=false is real), polling uploadWidgetStatus twice returns
+identical bodies (readOnly=true is real).
+
+## F28 — Decline telemetry (round 18)
+Declining the SAME action repeatedly is a signal that the agent is stuck
+in a confirm/decline loop. confirm.elicit.ts now records every decline
+(decline/cancel/deny/no AND unknown shapes) per organization + normalized
+action message (quoted values stripped so different post ids count
+together), 10-minute TTL, best-effort, never affects the decision. From
+the 3rd decline of the same action the single-write tools append to
+their decline error: "The user has declined this same action several
+times recently - do not keep retrying it. Ask them what should change
+about the request instead." Acceptance after declines still works and a
+different action starts fresh (suite proves both). Batch-form declines
+are recorded too (guidance rides the per-post declined path).
+
+### Eighteenth pass suites (2026-09-29)
+- `.freebuff/mcp-hints-deep-test.mjs` — **12/12 (new)**: see F27/F28
+- Full battery green (15 suites live): 12 + 14 + 24 + 9 + 93 + 40 + 43 +
+  14 + 17 + 28 + 16 + 18 + 33 + 22 + 41 = 424 assertions, 0 failures

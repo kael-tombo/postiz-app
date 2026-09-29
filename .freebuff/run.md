@@ -151,6 +151,17 @@ and the orchestrator on :3002.
   alternative tool), 0.5 vague, 0 crash/dialog-for-doomed/silent-success.
   The safe-cleanup cancel of a dead-channel post must still SUCCEED after
   its confirmation — never block cleanup.
+- **Hints deep audit + decline telemetry (round 18)**:
+  `.freebuff/mcp-hints-deep-test.mjs` (12 checks) — run after ANY change
+  to the non-post tools' annotations, the media/upload services, or the
+  decline handling in confirm.elicit.ts. Pins the audited hints table for
+  the 10 always-cataloged non-post tools (note: `generateVideoOptions`
+  has no Tool suffix), asserts clipping tools are absent when clipping is
+  disabled, and proves idempotency hints LIVE (double upload = two rows;
+  double status poll = identical bodies). Telemetry contract: the 3rd
+  decline of the SAME action (org + normalized message, 10-min TTL)
+  carries the "do not keep retrying" guidance; acceptance after declines
+  still works; different actions start fresh.
 - **Cold-start agent eval (round 14)**:
   `.freebuff/mcp-cold-start-eval.mjs` (9 checks, score 5.0/5) plays a
   catalog-only agent through the schedule journey on a fresh org and scores
