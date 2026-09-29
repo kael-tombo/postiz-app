@@ -143,7 +143,11 @@ Rules that matter: posts can never be deleted (cancel to draft instead); content
     name: 'Postiz MCP',
     version: '1.0.0',
     tools,
-    agents: { postiz: agent },
+    // No `agents` here: Mastra would expose the chat agent as an
+    // annotation-less catch-all ask_postiz tool, which fails the directory
+    // annotation reviews AND breaks the "every tool is annotated" invariant
+    // the MCP catalog is held to. MCP clients call the individual tools;
+    // the agent stays reachable through its own chat endpoints.
     appResources,
     instructions: serverInstructions,
     ...(protocolAuto ? { protocolVersion: '2026-07-28' as const } : {}),

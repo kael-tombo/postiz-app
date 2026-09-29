@@ -2,6 +2,10 @@ import { AgentToolInterface } from '@gitroom/nestjs-libraries/chat/agent.tool.in
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { Injectable } from '@nestjs/common';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 import { PostsService } from '@gitroom/nestjs-libraries/database/prisma/posts/posts.service';
 import { checkAuth } from '@gitroom/nestjs-libraries/chat/auth.context';
 import { orgWriteRateLimit } from '@gitroom/nestjs-libraries/chat/tools/write.rate.limit';
@@ -69,6 +73,54 @@ The tool also asks the user to confirm through the MCP connection (elicitation) 
         const rate = await orgWriteRateLimit(organizationId);
         if (rate.limited) {
           return { output: { errors: rate.message! } };
+        }
+
+        // Pre-flight BEFORE the confirmation dialog (same ordering as
+        // postDate/postStatus/postContent): refuse doomed calls with
+        // actionable errors instead of asking the user to confirm a settings
+        // change that cannot succeed (unknown ids used to die inside the
+        // service after the dialog).
+        const ordered = await this._postsService.getPostsRecursively(
+          inputData.id,
+          true,
+          organizationId,
+          true
+        );
+        const root: any = ordered[0];
+        if (!root) {
+          return {
+            output: {
+              errors:
+                'Post not found - find the post with the postsList tool and pass its id',
+            },
+          };
+        }
+        if (root.parentPostId) {
+          return {
+            output: {
+              errors:
+                'This id belongs to a comment, pass the id of the main post',
+            },
+          };
+        }
+        if (root.state !== 'QUEUE' && root.state !== 'DRAFT') {
+          return {
+            output: {
+              errors:
+                'Only scheduled posts that were not published yet (or drafts) can be updated',
+            },
+          };
+        }
+        if (
+          root.state === 'QUEUE' &&
+          dayjs.utc(root.publishDate).isBefore(dayjs.utc())
+        ) {
+          return {
+            output: {
+              errors:
+                'The publish time of this post already passed, its settings cannot be changed',
+            },
+          };
         }
 
         const keys = (inputData.settings || []).map((s: { key: string }) => s.key).join(', ');

@@ -93,6 +93,57 @@ If validation fails, the result contains output.errors describing what to fix; t
           return { output: { errors: rate.message! } };
         }
 
+        // Pre-flight BEFORE the confirmation dialog (same ordering as
+        // postDate/postStatus): refuse doomed calls with actionable errors
+        // instead of asking the user to confirm an edit that cannot succeed.
+        // Org-scoped fetch: ordered as root post -> comments, root carries
+        // integration + tags (same call updatePostSettings relies on).
+        const ordered = await this._postsService.getPostsRecursively(
+          inputData.id,
+          true,
+          organizationId,
+          true
+        );
+        const root: any = ordered[0];
+        if (!root) {
+          return { output: { errors: 'Post not found' } };
+        }
+        if (root.parentPostId) {
+          return {
+            output: {
+              errors:
+                'This id belongs to a comment, pass the id of the main post',
+            },
+          };
+        }
+        if (root.state !== 'QUEUE' && root.state !== 'DRAFT') {
+          return {
+            output: {
+              errors:
+                'Only scheduled posts that were not published yet (or drafts) can be edited',
+            },
+          };
+        }
+        if (
+          root.state === 'QUEUE' &&
+          dayjs.utc(root.publishDate).isBefore(dayjs.utc())
+        ) {
+          return {
+            output: {
+              errors:
+                'The publish time of this post already passed, it cannot be edited',
+            },
+          };
+        }
+
+        if (inputData.content && inputData.content.length > ordered.length) {
+          return {
+            output: {
+              errors: `This post has ${ordered.length} message part(s), but ${inputData.content.length} texts were passed`,
+            },
+          };
+        }
+
         const confirm = await confirmWithUser(
           context,
           `Replace the content/media of post "${inputData.id}"?`
@@ -106,54 +157,6 @@ If validation fails, the result contains output.errors describing what to fix; t
         }
 
         try {
-          // Org-scoped fetch: ordered as root post -> comments, root carries
-          // integration + tags (same call updatePostSettings relies on).
-          const ordered = await this._postsService.getPostsRecursively(
-            inputData.id,
-            true,
-            organizationId,
-            true
-          );
-          const root: any = ordered[0];
-          if (!root) {
-            return { output: { errors: 'Post not found' } };
-          }
-          if (root.parentPostId) {
-            return {
-              output: {
-                errors:
-                  'This id belongs to a comment, pass the id of the main post',
-              },
-            };
-          }
-          if (root.state !== 'QUEUE' && root.state !== 'DRAFT') {
-            return {
-              output: {
-                errors:
-                  'Only scheduled posts that were not published yet (or drafts) can be edited',
-              },
-            };
-          }
-          if (
-            root.state === 'QUEUE' &&
-            dayjs.utc(root.publishDate).isBefore(dayjs.utc())
-          ) {
-            return {
-              output: {
-                errors:
-                  'The publish time of this post already passed, it cannot be edited',
-              },
-            };
-          }
-
-          if (inputData.content && inputData.content.length > ordered.length) {
-            return {
-              output: {
-                errors: `This post has ${ordered.length} message part(s), but ${inputData.content.length} texts were passed`,
-              },
-            };
-          }
-
           const contentPassed = !!inputData.content?.length;
           const attachmentsPassed = Array.isArray(inputData.attachments);
 
