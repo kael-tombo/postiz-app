@@ -255,16 +255,14 @@ export function RegisterAfter({
                     {t('create_account', 'Create Account')}
                   </Button>
                 </div>
-                <p className="mt-4 text-sm">
-                  {t('already_have_an_account', 'Already Have An Account?')}
-                  &nbsp;
-                  <Link
-                    href="/auth/login"
-                    className="underline  cursor-pointer"
-                  >
-                    {t('sign_in', 'Sign In')}
-                  </Link>
-                </p>
+                {/* Auth mode switch as a visible button, not a bare link (B3/I3) */}
+                <Link
+                  href="/auth/login"
+                  className="mt-4 block w-full text-center text-[14px] py-[10px] rounded-[8px] border border-[var(--new-border)] text-textItemBlur hover:text-textColor hover:bg-boxFocused transition-colors"
+                >
+                  {t('already_have_an_account', 'Already Have An Account?')}&nbsp;
+                  <span className="underline font-[600] text-textColor">{t('sign_in', 'Sign In')}</span>
+                </Link>
               </div>
             </div>
           </div>

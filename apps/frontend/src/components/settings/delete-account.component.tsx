@@ -88,9 +88,11 @@ const DeleteAccountComponent: FC<{ isLink?: boolean }> = ({ isLink }) => {
   }
 
   return (
-    <div className="my-[16px] mt-[16px] bg-sixth border-fifth border rounded-[4px] p-[24px] flex flex-col gap-[24px]">
+    <div className="my-[16px] mt-[16px] border border-red-900/40 bg-red-900/5 rounded-[8px] p-[24px] flex flex-col gap-[24px]">
       {loadingOverlay}
-      <div className="mt-[4px]">{t('delete_account', 'Delete Account')}</div>
+      <div className="mt-[4px] text-red-400 font-[600] uppercase text-[12px] tracking-wide">
+        {t('danger_zone', 'Danger zone')}
+      </div>
       <div className="flex items-center justify-between">
         <div className="flex flex-col">
           <div className="text-[14px]">

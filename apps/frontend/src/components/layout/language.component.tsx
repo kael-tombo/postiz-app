@@ -135,6 +135,16 @@ export const LanguageComponent = () => {
   return (
     <div
       onClick={openModal}
+      role="button"
+      tabIndex={0}
+      aria-label={`Change language (current: ${currentLanguage})`}
+      title={`Language: ${currentLanguage}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openModal();
+        }
+      }}
       className="rounded-full overflow-hidden h-[22px] w-[22px] relative cursor-pointer"
     >
       <ReactCountryFlag

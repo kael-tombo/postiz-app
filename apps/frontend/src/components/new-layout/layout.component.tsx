@@ -124,7 +124,7 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex-1 bg-newBgLineColor rounded-[12px] overflow-hidden flex flex-col gap-[1px] blurMe">
+                    <div className="flex-1 bg-newBgLineColor rounded-[12px] overflow-hidden flex flex-col gap-[1px] blurMe border border-[var(--new-border)]">
                       <div className="flex bg-newBgColorInner h-[80px] px-[20px] items-center">
                         <div className="text-[24px] font-[600] flex flex-1">
                           <Title />

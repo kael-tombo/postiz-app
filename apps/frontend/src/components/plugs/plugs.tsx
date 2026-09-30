@@ -126,6 +126,13 @@ export const Plugs = () => {
           collapseMenu === '1' ? 'group sidebar w-[100px]' : 'w-[260px]'
         )}
       >
+        {/* First-run explainer (assessment P1/I1): what a Plug is, in one line */}
+        <div className="group-[.sidebar]:hidden text-[12px] leading-[1.5] text-textItemBlur border border-newColColor rounded-[8px] p-[10px]">
+          {t(
+            'plugs_explainer',
+            'Plugs turn incoming webhooks into posts on a channel — connect an automation (n8n, Zapier, curl) and post without opening SocialFlow.'
+          )}
+        </div>
         <div className="flex gap-[12px] flex-col">
           <div className="flex items-center">
             <h2 className="group-[.sidebar]:hidden flex-1 text-[20px] font-[500]">
@@ -215,6 +222,16 @@ export const Plugs = () => {
                 )}
               >
                 {integration.name}
+                {/* Plug status badge (assessment P2/I2) */}
+                {currentIntegrationPlug?.providerId === integration.id ? (
+                  <span className="ms-[6px] text-[10px] font-[600] px-[6px] py-[1px] rounded-full bg-[var(--new-btn-primary)]/15 text-[var(--new-btn-primary)] align-middle">
+                    {t('plug_active', 'Plug active')}
+                  </span>
+                ) : (
+                  <span className="ms-[6px] text-[10px] font-[600] px-[6px] py-[1px] rounded-full bg-newColColor text-textItemBlur align-middle">
+                    {t('plug_off', 'Plug off')}
+                  </span>
+                )}
               </div>
             </div>
           ))}

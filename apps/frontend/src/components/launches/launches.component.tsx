@@ -58,8 +58,8 @@ export const SVGLine = () => {
           y2="-28.6843"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#662FDA" />
-          <stop offset="1" stopColor="#5720CB" />
+          <stop stopColor="#0D9488" />
+          <stop offset="1" stopColor="#0B7A70" />
         </linearGradient>
         <radialGradient
           id="paint1_radial_1930_1119"
@@ -69,8 +69,8 @@ export const SVGLine = () => {
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(1.19333 7.45342) rotate(21.2064) scale(16.1503 188.627)"
         >
-          <stop stopColor="#8C66FF" />
-          <stop offset="1" stopColor="#8C66FF" stopOpacity="0" />
+          <stop stopColor="#5EEAD4" />
+          <stop offset="1" stopColor="#5EEAD4" stopOpacity="0" />
         </radialGradient>
       </defs>
     </svg>
@@ -336,6 +336,17 @@ export const MenuComponent: FC<
         )}
       >
         {integration.name}
+        {/* Status badges (assessment G1/I1): state is scannable, not just tint */}
+        {integration.refreshNeeded && (
+          <span className="ms-[6px] text-[10px] font-[600] px-[6px] py-[1px] rounded-full bg-red-500/15 text-red-400 align-middle">
+            {t('needs_reconnect', 'Needs reconnect')}
+          </span>
+        )}
+        {!integration.refreshNeeded && integration.disabled && (
+          <span className="ms-[6px] text-[10px] font-[600] px-[6px] py-[1px] rounded-full bg-newColColor text-textItemBlur align-middle">
+            {t('disabled_badge', 'Disabled')}
+          </span>
+        )}
       </div>
       <Menu
         canChangeProfilePicture={integration.changeProfilePicture}
@@ -401,10 +412,12 @@ export const LaunchesComponent = () => {
     [integrations]
   );
   const sortedIntegrations = useMemo(() => {
+    // Unhealthy channels (assessment G1/I1): refreshNeeded/disabled float to
+    // the top so the reconnect task is the first thing seen.
     return orderBy(
       integrations,
-      ['type', 'disabled', 'identifier'],
-      ['desc', 'asc', 'asc']
+      [(o: any) => !(o.refreshNeeded || o.inBetweenSteps), 'type', 'disabled', 'identifier'],
+      ['asc', 'desc', 'asc', 'asc']
     );
   }, [integrations]);
   const menuIntegrations = useMemo(() => {

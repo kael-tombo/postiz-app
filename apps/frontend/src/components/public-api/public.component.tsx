@@ -345,7 +345,7 @@ const McpSection = ({
           {billingEnabled && (
             <>
               <a
-                className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
+                className="cursor-pointer px-[16px] h-[36px] bg-[#0D9488] hover:bg-[#0B7A70] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
                 href={mcpConnectorUrls.Claude}
                 target="_blank"
               >
@@ -353,7 +353,7 @@ const McpSection = ({
                 {t('add_to_claude', 'Add to Claude')}
               </a>
               <a
-                className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
+                className="cursor-pointer px-[16px] h-[36px] bg-[#0D9488] hover:bg-[#0B7A70] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
                 href={mcpConnectorUrls.ChatGPT}
                 target="_blank"
               >
@@ -363,7 +363,7 @@ const McpSection = ({
             </>
           )}
           <a
-            className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
+            className="cursor-pointer px-[16px] h-[36px] bg-[#0D9488] hover:bg-[#0B7A70] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
             href="https://docs.socialflow.ai/mcp/introduction"
             target="_blank"
           >
@@ -386,7 +386,7 @@ const McpSection = ({
                   className={clsx(
                     'cursor-pointer px-[14px] h-[36px] text-[13px] font-[500] rounded-[8px] transition-colors',
                     auth === m
-                      ? 'bg-[#612BD3] text-white'
+                      ? 'bg-[#0D9488] text-white'
                       : 'bg-btnSimple text-customColor18 hover:bg-boxHover hover:text-textColor'
                   )}
                   onClick={() => setAuth(m)}
@@ -415,7 +415,7 @@ const McpSection = ({
                 className={clsx(
                   'cursor-pointer px-[14px] h-[36px] text-[13px] font-[500] rounded-[8px] transition-colors flex items-center gap-[8px]',
                   activeClient === client
-                    ? 'bg-[#612BD3] text-white'
+                    ? 'bg-[#0D9488] text-white'
                     : 'bg-btnSimple text-customColor18 hover:bg-boxHover hover:text-textColor'
                 )}
                 onClick={() =>
@@ -480,7 +480,7 @@ const McpSection = ({
             )}
             {activeClient === 'Claude' && billingEnabled && (
               <a
-                className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
+                className="cursor-pointer px-[16px] h-[36px] bg-[#0D9488] hover:bg-[#0B7A70] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
                 href={mcpConnectorUrls.Claude}
                 target="_blank"
               >
@@ -490,7 +490,7 @@ const McpSection = ({
             )}
             {activeClient === 'ChatGPT' && billingEnabled && (
               <a
-                className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
+                className="cursor-pointer px-[16px] h-[36px] bg-[#0D9488] hover:bg-[#0B7A70] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
                 href={mcpConnectorUrls.ChatGPT}
                 target="_blank"
               >
@@ -500,7 +500,7 @@ const McpSection = ({
             )}
             {activeClient === 'Grok Bot' && billingEnabled && (
               <a
-                className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
+                className="cursor-pointer px-[16px] h-[36px] bg-[#0D9488] hover:bg-[#0B7A70] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
                 href={mcpConnectorUrls['Grok Bot']}
                 target="_blank"
               >
@@ -585,7 +585,7 @@ const CliSection = ({ apiKey }: { apiKey: string }) => {
         </div>
         <div className="flex gap-[6px] shrink-0 pt-[2px]">
           <a
-            className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
+            className="cursor-pointer px-[16px] h-[36px] bg-[#0D9488] hover:bg-[#0B7A70] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
             href="https://docs.socialflow.ai/cli/introduction"
             target="_blank"
           >
@@ -603,7 +603,7 @@ const CliSection = ({ apiKey }: { apiKey: string }) => {
               className={clsx(
                 'cursor-pointer px-[14px] h-[36px] text-[13px] font-[500] rounded-[8px] transition-colors',
                 mode === m
-                  ? 'bg-[#612BD3] text-white'
+                  ? 'bg-[#0D9488] text-white'
                   : 'bg-btnSimple text-customColor18 hover:bg-boxHover hover:text-textColor'
               )}
               onClick={() => setMode(m)}
@@ -741,7 +741,7 @@ const PublicApiContent = () => {
           </div>
           <div className="flex gap-[6px] shrink-0 pt-[2px]">
             <a
-              className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
+              className="cursor-pointer px-[16px] h-[36px] bg-[#0D9488] hover:bg-[#0B7A70] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
               href="https://docs.socialflow.ai/public-api"
               target="_blank"
             >
@@ -749,7 +749,7 @@ const PublicApiContent = () => {
             {t('read_the_docs', 'Docs')}
             </a>
             <a
-              className="cursor-pointer px-[16px] h-[36px] bg-[#612BD3] hover:bg-[#5520CB] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
+              className="cursor-pointer px-[16px] h-[36px] bg-[#0D9488] hover:bg-[#0B7A70] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
               href="https://www.npmjs.com/package/n8n-nodes-postiz"
               target="_blank"
             >
@@ -897,7 +897,7 @@ export const PublicComponent = () => {
             className={clsx(
               'cursor-pointer px-[20px] h-[44px] text-[15px] font-[600] rounded-[8px] transition-colors',
               subTab === tab
-                ? 'bg-[#612BD3] text-white'
+                ? 'bg-[#0D9488] text-white'
                 : 'bg-btnSimple text-customColor18 hover:bg-boxHover hover:text-textColor'
             )}
             onClick={() => setSubTab(tab)}

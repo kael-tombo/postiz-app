@@ -19,7 +19,20 @@ const ModeComponent = () => {
     document.body.classList.add(mode);
   }, [mode]);
   return (
-    <div onClick={changeMode} className="select-none cursor-pointer">
+    <div
+      onClick={changeMode}
+      role="button"
+      tabIndex={0}
+      aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          changeMode();
+        }
+      }}
+      className="select-none cursor-pointer"
+    >
       {mode === 'dark' ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"

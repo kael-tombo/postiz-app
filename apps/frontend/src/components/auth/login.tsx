@@ -143,12 +143,13 @@ export function Login() {
                     {t('sign_in_1', 'Sign in')}
                   </Button>
                 </div>
-                <p className="mt-4 text-sm">
+                <Link
+                  href="/auth"
+                  className="mt-4 block w-full text-center text-[14px] py-[10px] rounded-[8px] border border-[var(--new-border)] text-textItemBlur hover:text-textColor hover:bg-boxFocused transition-colors"
+                >
                   {t('don_t_have_an_account', "Don't Have An Account?")}&nbsp;
-                  <Link href="/auth" className="underline cursor-pointer">
-                    {t('sign_up', 'Sign Up')}
-                  </Link>
-                </p>
+                  <span className="underline font-[600] text-textColor">{t('sign_up', 'Sign Up')}</span>
+                </Link>
                 <p className="mt-4 text-sm">
                   <Link
                     href="/auth/forgot"

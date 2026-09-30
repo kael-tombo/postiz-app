@@ -63,12 +63,39 @@ export const Input = ({
 
   const sendDisabled = !canSend && !canStop;
 
+  // Starter prompts teach what the agent can do (assessment A2/I2): shown
+  // while the input is empty, one click fills the textarea.
+  const starters = [
+    'Create a post for next week about our launch',
+    'Plan a week of content for my channels',
+    'What are the best times to post?',
+    'Turn my last post into a thread',
+  ];
+
   return (
     <div
       className={`copilotKitInputContainer ${
         showPoweredBy ? 'poweredByContainer' : ''
       }`}
     >
+      {!text && !isInProgress && (
+        <div className="flex flex-wrap gap-[8px] pb-[10px]">
+          {starters.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => {
+                setText(s);
+                onChange(s);
+                textareaRef.current?.focus();
+              }}
+              className="text-[12px] px-[12px] py-[6px] rounded-full border border-[var(--new-border)] text-textItemBlur hover:text-textItemFocused hover:bg-boxFocused transition-colors"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="copilotKitInput" onClick={handleDivClick}>
         <AutoResizingTextarea
           ref={textareaRef}

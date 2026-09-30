@@ -16,8 +16,46 @@ body {
   color: var(--new-btn-text);
 }
 
-body * {
-  outline: none !important;
+// Accessibility: a visible focus ring instead of the old blanket
+// "outline: none" (keyboard users could not see where they were).
+// :focus-visible only fires for keyboard navigation, so mouse clicks
+// stay ring-free.
+:focus-visible {
+  outline: 2px solid var(--new-btn-primary) !important;
+  outline-offset: 2px;
+}
+
+// Text selection in the brand color.
+::selection {
+  background: var(--new-btn-primary);
+  color: #fff;
+}
+
+// Themed scrollbars (thin, quiet, brand-tinted thumb).
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--new-sep) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--new-sep);
+  border-radius: 8px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--new-menu-dots);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+// Smooth theme-aware transitions on interactive chrome.
+a,
+button {
+  transition: background-color 0.15s ease, color 0.15s ease,
+    border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .box {

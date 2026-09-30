@@ -408,11 +408,20 @@ export const Filters = () => {
               </svg>
             </div>
           </div>
-          <div className="flex flex-row p-[4px] border border-newTableBorder rounded-[8px] text-[14px] font-[500]">
+          <div className="flex flex-row p-[4px] border border-newTableBorder rounded-[8px] text-[14px] font-[500]" role="group" aria-label={t('filter_posts', 'Filter posts')}>
             {listStateOptions.map((option) => (
               <div
                 key={option.value}
                 onClick={setListStateFilter(option.value)}
+                role="button"
+                tabIndex={0}
+                aria-pressed={calendar.listState === option.value}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setListStateFilter(option.value)();
+                  }
+                }}
                 className={clsx(
                   'pt-[6px] pb-[5px] cursor-pointer min-w-[80px] px-[12px] text-center rounded-[6px]',
                   calendar.listState === option.value &&
@@ -432,13 +441,16 @@ export const Filters = () => {
         integrations={calendar.integrations}
       />
       {!isListView && (
-        <div className="flex flex-row p-[4px] border border-newTableBorder rounded-[8px] text-[14px] font-[500]">
+        <div className="flex flex-row p-[4px] border border-newTableBorder rounded-[8px] text-[14px] font-[500]" role="group" aria-label={t('calendar_view', 'Calendar view')}>
           <div
             className={clsx(
               'pt-[6px] pb-[5px] cursor-pointer w-[74px] text-center rounded-[6px]',
               calendar.display === 'day' && 'text-textItemFocused bg-boxFocused'
             )}
             onClick={setDay}
+            role="button"
+            tabIndex={0}
+            aria-pressed={calendar.display === 'day'}
           >
             {t('day', 'Day')}
           </div>
@@ -448,6 +460,9 @@ export const Filters = () => {
               calendar.display === 'week' && 'text-textItemFocused bg-boxFocused'
             )}
             onClick={setWeek}
+            role="button"
+            tabIndex={0}
+            aria-pressed={calendar.display === 'week'}
           >
             {t('week', 'Week')}
           </div>
@@ -457,6 +472,9 @@ export const Filters = () => {
               calendar.display === 'month' && 'text-textItemFocused bg-boxFocused'
             )}
             onClick={setMonth}
+            role="button"
+            tabIndex={0}
+            aria-pressed={calendar.display === 'month'}
           >
             {t('month', 'Month')}
           </div>

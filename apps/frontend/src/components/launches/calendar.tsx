@@ -46,6 +46,7 @@ import SafeImage from '@gitroom/react/helpers/safe.image';
 import { extend } from 'dayjs';
 import { isUSCitizen } from './helpers/isuscitizen.utils';
 import { useInterval } from '@mantine/hooks';
+import { NewPost } from '@gitroom/frontend/components/launches/new.post';
 import { StatisticsModal } from '@gitroom/frontend/components/launches/statistics';
 import { MissingReleaseModal } from '@gitroom/frontend/components/launches/missing-release.modal';
 import { useT } from '@gitroom/react/translation/get.transation.service.client';
@@ -358,6 +359,12 @@ export const WeekView = () => {
     return days;
   }, [i18next.resolvedLanguage, startDate]);
 
+  const nowHour = newDayjs().hour();
+  const nowMinute = newDayjs().minute();
+  const todayIndex = localizedDays.findIndex(
+    (d) => d.day === newDayjs().format('L')
+  );
+
   return (
     <div className="flex flex-col text-textColor flex-1">
       <div className="flex-1 relative">
@@ -398,6 +405,25 @@ export const WeekView = () => {
                     <CalendarColumn
                       getDate={day.date.hour(hour).startOf('hour')}
                     />
+                    {/* Current-time indicator (assessment C3/I3): a 2px line
+                        across today's column at the current hour, updated by
+                        the column's own minute tick while the view is open. */}
+                    {indexDay === todayIndex && hour === nowHour && (
+                      <div
+                        aria-hidden="true"
+                        className="absolute left-0 right-0 z-[15] pointer-events-none"
+                        style={{
+                          top: `${(nowMinute / 60) * 100}%`,
+                          height: '2px',
+                          background: 'var(--new-btn-primary)',
+                        }}
+                      >
+                        <span
+                          className="absolute left-[-1px] top-[-3px] w-[8px] h-[8px] rounded-full"
+                          style={{ background: 'var(--new-btn-primary)' }}
+                        />
+                      </div>
+                    )}
                   </div>
                 </Fragment>
               ))}
@@ -524,8 +550,10 @@ export const ListView = () => {
 
   if (listPosts.length === 0) {
     return (
-      <div className="flex flex-col flex-1 items-center justify-center">
+      <div className="flex flex-col flex-1 items-center justify-center gap-[14px]">
         <div className="text-textColor text-[16px]">{emptyMessage}</div>
+        {/* Empty state is never a dead end (assessment C4/I4) */}
+        {integrations.length > 0 && <NewPost />}
       </div>
     );
   }
@@ -850,8 +878,8 @@ export const CalendarColumn: FC<{
       )}
       <div
         className={clsx(
-          'relative flex flex-col flex-1 text-white rounded-[8px] min-h-[70px]',
-          canDrop && 'border border-[#612BD3]'
+          'relative flex flex-col flex-1 rounded-[8px] min-h-[70px] transition-colors',
+          canDrop && 'bg-[color-mix(in_srgb,var(--new-btn-primary)_12%,transparent)] outline-2 outline-dashed outline-[var(--new-btn-primary)]'
         )}
       >
         <div

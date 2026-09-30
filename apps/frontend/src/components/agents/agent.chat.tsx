@@ -63,13 +63,14 @@ export const AgentChat: FC = () => {
       <div
         style={
           {
-            '--copilot-kit-primary-color': 'var(--new-btn-text)',
-            '--copilot-kit-background-color': 'var(--new-bg-color)',
+            '--copilot-kit-primary-color': 'var(--new-btn-primary)',
+            '--copilot-kit-background-color': 'var(--new-bgColorInner)',
           } as CopilotKitCSSProperties
         }
         className="trz agent bg-newBgColorInner flex flex-col gap-[15px] transition-all flex-1 items-center relative"
       >
         <div className="absolute left-0 w-full h-full pb-[20px]">
+          <div className="max-w-[820px] mx-auto w-full h-full">
           <CopilotChat
             className="w-full h-full"
             labels={{
@@ -88,6 +89,7 @@ You can also use me as an MCP Server, check Settings >> Public API
             UserMessage={Message}
             Input={NewInput}
           />
+          </div>
         </div>
       </div>
     </CopilotKit>

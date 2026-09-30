@@ -211,6 +211,9 @@ export const MediaBox: FC<{
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 300);
+  // Type filter chips (assessment M5/I2): client-side refine on top of the
+  // server list. Hidden when the caller already pinned a type.
+  const [kindFilter, setKindFilter] = useState<'all' | 'image' | 'video'>('all');
   const fetch = useFetch();
   const modals = useModals();
   const toaster = useToaster();
@@ -433,9 +436,36 @@ export const MediaBox: FC<{
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t('search_media_by_name', 'Search by file name')}
-              className="w-full h-[44px] px-[14px] rounded-[8px] bg-newBgColorInner border border-newColColor text-[14px] outline-none focus:border-[#612BD3]"
+              className="w-full h-[44px] px-[14px] rounded-[8px] bg-newBgColorInner border border-newColColor text-[14px] outline-none focus:border-[#0D9488]"
             />
           </div>
+          {!type && (
+            <div
+              role="group"
+              aria-label={t('filter_media_type', 'Filter by type')}
+              className="flex p-[3px] gap-[2px] border border-newColColor rounded-[8px] text-[13px] font-[500] self-center"
+            >
+              {(['all', 'image', 'video'] as const).map((k) => (
+                <button
+                  key={k}
+                  type="button"
+                  aria-pressed={kindFilter === k}
+                  onClick={() => {
+                    setKindFilter(k);
+                    setPage(0);
+                  }}
+                  className={clsx(
+                    'px-[10px] py-[4px] rounded-[6px] capitalize transition-colors',
+                    kindFilter === k
+                      ? 'bg-[var(--new-btn-primary)] text-white'
+                      : 'text-textItemBlur hover:text-textItemFocused'
+                  )}
+                >
+                  {t(`media_kind_${k}`, k)}
+                </button>
+              ))}
+            </div>
+          )}
           <input
             type="file"
             ref={uploaderRef}
@@ -527,11 +557,14 @@ export const MediaBox: FC<{
             )}
             {data?.results
               ?.filter((f: any) => {
+                const isVideo = hasExtension(f.path, 'mp4');
                 if (type === 'video') {
-                  return hasExtension(f.path, 'mp4');
+                  return isVideo;
                 } else if (type === 'image') {
-                  return !hasExtension(f.path, 'mp4');
+                  return !isVideo;
                 }
+                if (kindFilter === 'video') return isVideo;
+                if (kindFilter === 'image') return !isVideo;
                 return true;
               })
               .map((media: any) => (
@@ -546,20 +579,29 @@ export const MediaBox: FC<{
                     className={clsx(
                       'w-full h-full rounded-[6px] border-[4px] relative',
                       !!selected.find((p) => p.id === media.id)
-                        ? 'border-[#612BD3]'
+                        ? 'border-[#0D9488]'
                         : 'border-transparent'
                     )}
                     onClick={addRemoveSelected(media)}
                   >
                     {!!selected.find((p: any) => p.id === media.id) ? (
-                      <div className="text-white flex z-[101] justify-center items-center text-[14px] font-[500] w-[24px] h-[24px] rounded-full bg-[#612BD3] absolute -bottom-[10px] -end-[10px]">
+                      <div className="text-white flex z-[101] justify-center items-center text-[14px] font-[500] w-[24px] h-[24px] rounded-full bg-[#0D9488] absolute -bottom-[10px] -end-[10px]">
                         {selected.findIndex((z: any) => z.id === media.id) + 1}
                       </div>
                     ) : (
-                      <DeleteCircleIcon
-                        className="cursor-pointer hidden z-[100] group-hover:block absolute -top-[5px] -end-[5px]"
+                      <span
+                        title={t('delete_media', 'Delete media')}
+                        aria-label={t('delete_media', 'Delete media')}
+                        role="button"
+                        tabIndex={0}
+                        className="cursor-pointer hidden z-[100] group-hover:block absolute -top-[5px] -end-[5px] text-[#F97066] hover:scale-110 transition-transform"
                         onClick={deleteImage(media)}
-                      />
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') deleteImage(media)(e);
+                        }}
+                      >
+                        <DeleteCircleIcon />
+                      </span>
                     )}
                     <div className="absolute bottom-[10px] end-[10px] z-[100]">{media.originalName}</div>
                     <div className="w-full h-full rounded-[6px] overflow-hidden relative">
@@ -618,7 +660,7 @@ export const MediaBox: FC<{
               <button
                 onClick={standalone ? () => {} : addMedia}
                 disabled={selected.length === 0}
-                className="cursor-pointer text-white disabled:opacity-80 disabled:cursor-not-allowed h-[52px] px-[20px] items-center justify-center bg-[#612BD3] flex rounded-[10px]"
+                className="cursor-pointer text-white disabled:opacity-80 disabled:cursor-not-allowed h-[52px] px-[20px] items-center justify-center bg-[#0D9488] flex rounded-[10px]"
               >
                 {t('add_selected_media', 'Add selected media')}
               </button>

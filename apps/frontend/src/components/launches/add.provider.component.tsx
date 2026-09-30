@@ -669,9 +669,54 @@ export const AddProviderComponent: FC<{
 
   const t = useT();
 
+  // Provider search (assessment G2/I2) + category grouping (G3/I3).
+  const [providerSearch, setProviderSearch] = React.useState('');
+  const blogIdentifiers = React.useMemo(
+    () =>
+      new Set(
+        article.map((a) => a.identifier)
+      ),
+    [article]
+  );
+  const categoryOf = (identifier: string): 'Blogging' | 'Social' =>
+    blogIdentifiers.has(identifier) ? 'Blogging' : 'Social';
+
+  const visibleSocial = social.filter((item) => {
+    if (props.invite) {
+      if (
+        item.isExternal ||
+        item.isWeb3 ||
+        item.isChromeExtension ||
+        item.customFields
+      ) {
+        return false;
+      }
+    }
+    const q = providerSearch.trim().toLowerCase();
+    return !q || item.name.toLowerCase().includes(q);
+  });
+  const categories: Array<'Social' | 'Blogging'> = ['Social', 'Blogging'];
+
   return (
     <div className="w-full flex flex-col gap-[20px] rounded-[4px] relative]">
       <div className="flex flex-col">
+        <input
+          type="text"
+          value={providerSearch}
+          onChange={(e) => setProviderSearch(e.target.value)}
+          placeholder={t('search_providers', 'Search platforms...')}
+          className="w-full h-[40px] px-[12px] rounded-[8px] bg-newBgColorInner border border-newColColor text-[14px] outline-none focus:border-[var(--new-btn-primary)] mb-[8px]"
+        />
+        {categories.map((category) => {
+          const items = visibleSocial.filter(
+            (item) => categoryOf(item.identifier) === category
+          );
+          if (!items.length) return null;
+          return (
+            <div key={category} className="mb-[12px]">
+              <div className="text-[12px] uppercase tracking-wide text-textItemBlur mb-[8px]">
+                {category}
+              </div>
         <div
           className={clsx(
             isMobile && 'gap-[20px] flex flex-col',
@@ -680,19 +725,7 @@ export const AddProviderComponent: FC<{
             isMobile ? {} : onboarding ? 'grid-cols-9' : 'grid-cols-5'
           )}
         >
-          {social
-            .filter((item) => {
-              if (!props.invite) {
-                return true;
-              }
-
-              return (
-                !item.isExternal &&
-                !item.isWeb3 &&
-                !item.isChromeExtension &&
-                !item.customFields
-              );
-            })
+          {items
             .map((item) => (
               <div
                 key={item.identifier}
@@ -757,6 +790,14 @@ export const AddProviderComponent: FC<{
               </div>
             ))}
         </div>
+            </div>
+          );
+        })}
+        {visibleSocial.length === 0 && (
+          <div className="text-center text-textItemBlur text-[14px] py-[20px]">
+            {t('no_platform_matches', 'No platform matches your search')}
+          </div>
+        )}
       </div>
     </div>
   );
