@@ -127,7 +127,7 @@ export const Plugs = () => {
         )}
       >
         {/* First-run explainer (assessment P1/I1): what a Plug is, in one line */}
-        <div className="group-[.sidebar]:hidden text-[12px] leading-[1.5] text-textItemBlur border border-newColColor rounded-[8px] p-[10px]">
+        <div className="group-[.sidebar]:hidden text-[12px] leading-[1.5] text-textItemBlur border border-[var(--new-border)] rounded-[10px] p-[10px]">
           {t(
             'plugs_explainer',
             'Plugs turn incoming webhooks into posts on a channel — connect an automation (n8n, Zapier, curl) and post without opening SocialFlow.'

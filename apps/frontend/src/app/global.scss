@@ -25,10 +25,11 @@ body {
   outline-offset: 2px;
 }
 
-// Text selection in the brand color.
+// Text selection: a light accent wash (legible in both modes, calmer than a
+// solid fill).
 ::selection {
-  background: var(--new-btn-primary);
-  color: #fff;
+  background: color-mix(in srgb, var(--new-btn-primary) 30%, transparent);
+  color: var(--new-btn-text);
 }
 
 // Themed scrollbars (thin, quiet, brand-tinted thumb).

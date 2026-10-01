@@ -108,28 +108,28 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
               ) : (
                 <>
                   <AnnouncementBanner />
-                  <div className="flex-1 flex gap-[8px]">
+                  <div className="flex-1 flex gap-[12px]">
                     <Support />
-                    <div className="flex flex-col bg-newBgColorInner w-[80px] rounded-[12px]">
+                    <div className="flex flex-col bg-newBgColorInner w-[84px] rounded-[16px] border border-[var(--new-border)] shadow-card">
                       <div
                         id="left-menu"
                         className={clsx(
-                          'fixed h-full w-[64px] start-[17px] flex flex-1 top-0',
+                          'fixed h-full w-[68px] start-[17px] flex flex-1 top-0',
                           user?.admin && 'pt-[60px] max-h-[1000px]:w-[500px]'
                         )}
                       >
-                        <div className="flex flex-col h-full gap-[32px] flex-1 py-[12px]">
+                        <div className="flex flex-col h-full gap-[32px] flex-1 py-[16px]">
                           <Logo />
                           <TopMenu />
                         </div>
                       </div>
                     </div>
-                    <div className="flex-1 bg-newBgLineColor rounded-[12px] overflow-hidden flex flex-col gap-[1px] blurMe border border-[var(--new-border)]">
-                      <div className="flex bg-newBgColorInner h-[80px] px-[20px] items-center">
-                        <div className="text-[24px] font-[600] flex flex-1">
+                    <div className="flex-1 bg-newBgColorInner rounded-[16px] overflow-hidden flex flex-col gap-[1px] blurMe border border-[var(--new-border)] shadow-card">
+                      <div className="flex bg-newBgColorInner h-[64px] px-[24px] items-center border-b border-[var(--new-border)]">
+                        <div className="text-[18px] font-[600] flex flex-1">
                           <Title />
                         </div>
-                        <div className="flex gap-[20px] text-textItemBlur">
+                        <div className="flex gap-[16px] text-textItemBlur items-center">
                           <StreakComponent />
                           <div className="w-[1px] h-[20px] bg-blockSeparator" />
                           <OrganizationSelector />

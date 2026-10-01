@@ -143,6 +143,7 @@ module.exports = {
         greenToast: '0px 0px 50px rgba(60, 124, 90, 0.3)',
         menu: 'var(--menu-shadow)',
         previewShadow: 'var(--preview-box-shadow)',
+        card: 'var(--sf-shadow-card)',
       },
       dropShadow: {
         glow: [

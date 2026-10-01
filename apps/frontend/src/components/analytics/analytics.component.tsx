@@ -34,7 +34,7 @@ export const AnalyticsComponent: FC = () => {
       {/* Honest framing (assessment N1/I2): this page reports repository
           analytics; per-post social performance lives on each post's
           statistics menu in the Calendar. */}
-      <div className="bg-secondary border border-[var(--new-border)] rounded-[10px] p-[16px]">
+      <div className="bg-secondary border border-[var(--new-border)] rounded-[16px] p-[20px] shadow-card">
         <div className="text-[18px] font-[600]">Repository analytics</div>
         <div className="text-[13px] text-textItemBlur mt-[4px]">
           Stars, forks and trending data for the repositories you track. For
@@ -43,7 +43,7 @@ export const AnalyticsComponent: FC = () => {
         </div>
       </div>
       {!hasChannels && (
-        <div className="bg-secondary border border-[var(--new-border)] rounded-[10px] p-[16px] text-[14px]">
+        <div className="bg-secondary border border-[var(--new-border)] rounded-[16px] p-[20px] text-[14px] shadow-card">
           No channels connected yet — charts below show repository data only.
           Connect a channel from{' '}
           <a href="/launches" className="underline text-[var(--new-btn-primary)]">

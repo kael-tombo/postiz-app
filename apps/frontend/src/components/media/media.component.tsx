@@ -436,14 +436,14 @@ export const MediaBox: FC<{
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t('search_media_by_name', 'Search by file name')}
-              className="w-full h-[44px] px-[14px] rounded-[8px] bg-newBgColorInner border border-newColColor text-[14px] outline-none focus:border-[#0D9488]"
+              className="w-full h-[40px] px-[14px] rounded-[10px] bg-newBgColorInner border border-[var(--new-border)] text-[14px] outline-none focus:border-[var(--new-btn-primary)]"
             />
           </div>
           {!type && (
             <div
               role="group"
               aria-label={t('filter_media_type', 'Filter by type')}
-              className="flex p-[3px] gap-[2px] border border-newColColor rounded-[8px] text-[13px] font-[500] self-center"
+              className="flex p-[3px] gap-[2px] border border-[var(--new-border)] rounded-[10px] text-[13px] font-[500] self-center bg-newBgColorInner"
             >
               {(['all', 'image', 'video'] as const).map((k) => (
                 <button
@@ -455,9 +455,9 @@ export const MediaBox: FC<{
                     setPage(0);
                   }}
                   className={clsx(
-                    'px-[10px] py-[4px] rounded-[6px] capitalize transition-colors',
+                    'px-[10px] py-[4px] rounded-[8px] capitalize transition-colors',
                     kindFilter === k
-                      ? 'bg-[var(--new-btn-primary)] text-white'
+                      ? 'bg-[var(--new-box-focused)] text-textItemFocused'
                       : 'text-textItemBlur hover:text-textItemFocused'
                   )}
                 >
