@@ -53,7 +53,7 @@ const AnalyticsCard: FC<{
   total: string | number;
   index: number;
 }> = ({ item, total, index }) => {
-  const colorVariants = ['purple', 'green', 'blue'] as const;
+  const colorVariants = ['primary', 'green', 'blue'] as const;
   const color = colorVariants[index % colorVariants.length];
 
   const hasDataPoints = item.data.length >= 1;
@@ -77,7 +77,7 @@ const AnalyticsCard: FC<{
             <div
               className={`
                 w-[8px] h-[8px] rounded-full
-                ${color === 'purple' ? 'bg-[#0d9488]' : ''}
+                ${color === 'primary' ? 'bg-[var(--new-btn-primary)]' : ''}
                 ${color === 'green' ? 'bg-[#32d583]' : ''}
                 ${color === 'blue' ? 'bg-[#1d9bf0]' : ''}
               `}

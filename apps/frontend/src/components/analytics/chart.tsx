@@ -8,6 +8,7 @@ import {
 } from '@gitroom/frontend/components/analytics/stars.and.forks.interface';
 import dayjs from 'dayjs';
 import { newDayjs } from '@gitroom/frontend/components/layout/set.timezone';
+import { cssVar, withAlpha } from './chart.theme';
 export const Chart: FC<{
   list: StarsList[] | ForksList[];
 }> = (props) => {
@@ -15,11 +16,15 @@ export const Chart: FC<{
   const ref = useRef<any>(null);
   const chart = useRef<null | DrawChart>(null);
   useEffect(() => {
+    // Token-driven line + gradient: the old hardcoded white line was
+    // invisible on light-mode cards and the navy gradient dated from the
+    // old dark-navy palette.
+    const accent = cssVar('--new-btn-primary', '#14b8a6');
     const gradient = ref.current
       .getContext('2d')
       .createLinearGradient(0, 0, 0, ref.current.height);
-    gradient.addColorStop(0, 'rgba(114, 118, 137, 1)'); // Start color with some transparency
-    gradient.addColorStop(1, 'rgb(9, 11, 19, 1)');
+    gradient.addColorStop(0, withAlpha(accent, 0.6));
+    gradient.addColorStop(1, withAlpha(accent, 0.04));
     chart.current = new DrawChart(ref.current!, {
       type: 'line',
       options: {
@@ -52,7 +57,7 @@ export const Chart: FC<{
         labels: list.map((row) => newDayjs(row.date).format('DD/MM/YYYY')),
         datasets: [
           {
-            borderColor: '#fff',
+            borderColor: accent,
             // @ts-ignore
             label: list?.[0]?.totalForks ? 'Forks by date' : 'Stars by date',
             backgroundColor: gradient,
@@ -66,6 +71,6 @@ export const Chart: FC<{
     return () => {
       chart?.current?.destroy();
     };
-  }, []);
+  }, [list]);
   return <canvas className="w-full h-full" ref={ref} />;
 };

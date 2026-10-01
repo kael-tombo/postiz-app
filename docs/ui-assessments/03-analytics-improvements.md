@@ -20,10 +20,15 @@ dashboard = tracked feature.)
 When the integration list is empty, a callout with an "Add Channel"
 link renders above the charts instead of meaningless zero charts.
 
-## I4 ⏳ Chart theming + legend contrast (N4), date range/export (N5)
-Deferred — chart lib re-theme is a larger sweep across chart.tsx /
-chart-social.tsx; paired with the future social dashboard.
-*Partially advanced by the redesign: surrounding cards/grid now follow
-the neutral tokens, but `chart-social.tsx` still hardcodes its tooltip/
-axis grays (`#1e1d1d`, `#9c9c9c`, `#2b2b2b`, …) and needs the lib-level
-re-theme. Not resolved.*
+## I4 ✅ Chart theming (N4 — canvas colors) · ⏳ date range/export (N5)
+Charts now read the design tokens: a shared `chart.theme.ts` helper
+resolves `--new-*` vars via `getComputedStyle(document.body)` (canvas
+can't resolve `var()` itself) and converts hex tokens to rgba for
+gradients. `chart-social.tsx`: tooltip bg/title/body/border + hover
+point ring all token-driven (the `mode === 'dark'` ternaries are gone);
+the default scheme was renamed `purple`→`primary`, killing the leftover
+Postiz purple `#612BD3` gradient that mismatched the already-teal dot
+indicators. `chart.tsx`: the hardcoded white line (invisible on light
+cards) and navy gradient replaced with the accent token. Effects re-run
+on theme flip so charts re-resolve tokens. Callers updated to the
+`primary` naming. Remaining: N5 date range/export — still deferred.

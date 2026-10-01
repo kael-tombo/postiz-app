@@ -5,6 +5,7 @@ import DrawChart from 'chart.js/auto';
 import { TotalList } from '@gitroom/frontend/components/analytics/stars.and.forks.interface';
 import { chunk } from 'lodash';
 import useCookie from 'react-use-cookie';
+import { cssVar, withAlpha } from './chart.theme';
 
 function mergeDataPoints(data: TotalList[], numPoints: number): TotalList[] {
   const res = chunk(data, Math.ceil(data.length / numPoints));
@@ -18,9 +19,9 @@ function mergeDataPoints(data: TotalList[], numPoints: number): TotalList[] {
 
 export const ChartSocial: FC<{
   data: TotalList[];
-  color?: 'purple' | 'green' | 'blue';
+  color?: 'primary' | 'green' | 'blue';
 }> = (props) => {
-  const { data, color = 'purple' } = props;
+  const { data, color = 'primary' } = props;
   const [mode] = useCookie('mode', 'dark');
 
   const list = useMemo(() => {
@@ -38,11 +39,14 @@ export const ChartSocial: FC<{
   const ref = useRef<any>(null);
   const chart = useRef<null | DrawChart>(null);
 
+  // The old 'purple' scheme was a leftover Postiz brand literal (#612BD3);
+  // 'primary' resolves the live theme accent so charts follow the tokens.
+  const accent = cssVar('--new-btn-primary', '#14b8a6');
   const colorSchemes = {
-    purple: {
-      start: 'rgba(97, 43, 211, 0.8)',
-      end: 'rgba(97, 43, 211, 0.1)',
-      border: 'rgb(97, 43, 211)',
+    primary: {
+      start: withAlpha(accent, 0.8),
+      end: withAlpha(accent, 0.1),
+      border: accent,
     },
     green: {
       start: 'rgba(50, 213, 131, 0.8)',
@@ -104,10 +108,10 @@ export const ChartSocial: FC<{
           },
           tooltip: {
             enabled: true,
-            backgroundColor: mode === 'dark' ? '#1e1d1d' : '#fff',
-            titleColor: mode === 'dark' ? '#fff' : '#000',
-            bodyColor: mode === 'dark' ? '#9c9c9c' : '#777',
-            borderColor: mode === 'dark' ? '#2b2b2b' : '#e7e9eb',
+            backgroundColor: cssVar('--new-bgColorInner', '#fff'),
+            titleColor: cssVar('--new-btn-text', '#000'),
+            bodyColor: cssVar('--new-table-text', '#777'),
+            borderColor: cssVar('--new-table-border', '#e7e9eb'),
             borderWidth: 1,
             padding: 10,
             cornerRadius: 8,
@@ -137,7 +141,7 @@ export const ChartSocial: FC<{
             pointRadius: 0,
             pointHoverRadius: 6,
             pointHoverBackgroundColor: colors.border,
-            pointHoverBorderColor: mode === 'dark' ? '#1e1d1d' : '#fff',
+            pointHoverBorderColor: cssVar('--new-bgColorInner', '#fff'),
             pointHoverBorderWidth: 2,
           },
         ],
@@ -146,7 +150,9 @@ export const ChartSocial: FC<{
     return () => {
       chart?.current?.destroy();
     };
-  }, []);
+    // Re-run on `mode` so resolved tokens are re-read after a theme flip,
+    // and on `list` so new data redraws.
+  }, [mode, list]);
 
   return <canvas className="w-full h-full" ref={ref} />;
 };
