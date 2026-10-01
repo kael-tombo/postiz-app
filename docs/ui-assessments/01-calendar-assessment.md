@@ -1,5 +1,7 @@
 # SocialFlow — UI/UX Assessment: Calendar (Home)
 
+> **2026-10 redesign update:** the modern-minimal redesign (docs/redesign/plan.md, commit 4e98302f) re-pointed all theme tokens to the neutral zinc/slate system with hairline cards and soft shadows. Per-item resolution status lives in the companion `-improvements.md`.
+
 **Scope:** `launches.component.tsx`, `calendar.tsx`, `filters.tsx`, `calendar.context.tsx`, `menu/`, `new.post.tsx`
 **Verdict:** 7/10 — the core surface is strong (drag & drop week/month/list views, channel sidebar with connect states, week/day/month toggle, empty states). Gaps are mostly affordance and feedback, not structure.
 

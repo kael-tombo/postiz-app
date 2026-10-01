@@ -2,6 +2,10 @@
 
 Companion to `08-auth-onboarding-assessment.md`.
 
+> **2026-10 redesign update:** auth surfaces read the same neutral token
+> set (verified via the shared `Input`/button primitives). No deferred
+> item resolved — B4/B5 are structural, B1's strength meter is a feature.
+
 ## I1 ✅ Password visibility toggle (B1, partial)
 Show/hide eye toggle on the auth password field (sign-up + sign-in).
 Strength meter deferred (needs zxcvbn or heuristic — batched later).
@@ -18,4 +22,4 @@ row — mode switching is discoverable.
 
 ## I4 ⏳ Testimonial clipping (B4), OAuth error states (B5)
 Deferred — B4 needs a scroll/fade rework; B5 needs error-code mapping
-from the OAuth round-trip.
+from the OAuth round-trip. *Not addressed by the redesign.*

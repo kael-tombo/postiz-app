@@ -2,6 +2,11 @@
 
 Companion to `02-agent-assessment.md`.
 
+> **2026-10 redesign update:** the chat's copilot vars now resolve through
+> the neutral token system (bg `#1A1C1F` dark / white light, teal accent),
+> and starter chips read the accent-weak token. No deferred item resolved —
+> the two below are behavioral.
+
 ## I1 ✅ Brand theming of the chat (A1)
 `--copilot-kit-primary-color` now maps to `--new-btn-primary` and the
 background to `--new-bgColorInner`, so chat buttons/bubbles follow the
@@ -18,7 +23,8 @@ threads stay readable on wide screens.
 
 ## I4 ⏳ Branded thinking indicator (A4)
 Deferred — requires overriding CopilotKit internals; revisit after an
-upgrade of @copilotkit packages.
+upgrade of @copilotkit packages. *Not addressed by the redesign.*
 
 ## I5 ⏳ Platform-limit hint in input (A5)
 Deferred — needs channel selection context inside the chat, larger change.
+*Not addressed by the redesign.*

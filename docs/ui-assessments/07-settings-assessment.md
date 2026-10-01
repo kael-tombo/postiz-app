@@ -1,5 +1,7 @@
 # SocialFlow — UI/UX Assessment: Settings
 
+> **2026-10 redesign update:** the modern-minimal redesign (docs/redesign/plan.md, commit 4e98302f) re-pointed all theme tokens to the neutral zinc/slate system with hairline cards and soft shadows. Per-item resolution status lives in the companion `-improvements.md`.
+
 **Scope:** `layout/settings.component.tsx` (tabbed shell: Global, Teams, Webhooks, Auto Post, Sets, Signatures, Developers, Approved Apps), `settings/*` panels
 **Verdict:** 6/10 — feature-complete tab list with permission gating, but navigation is a plain 260px text list with weak active states, no section icons, and no mobile handling; panels are inconsistent in heading structure.
 

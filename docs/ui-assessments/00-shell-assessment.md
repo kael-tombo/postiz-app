@@ -1,5 +1,7 @@
 # SocialFlow — UI/UX Assessment: Global Shell (Sidebar + Top Bar)
 
+> **2026-10 redesign update:** the modern-minimal redesign (docs/redesign/plan.md, commit 4e98302f) re-pointed all theme tokens to the neutral zinc/slate system with hairline cards and soft shadows. Per-item resolution status lives in the companion `-improvements.md`.
+
 **Scope:** `layout.component.tsx`, `menu-item.tsx`, `logo.tsx`, `top.menu.tsx`, `mode.component`, `organization.selector`
 **Verdict:** 6/10 — solid fixed-sidebar pattern with a clear active state, but the rail is cramped, labels are tiny, the top bar is an unlabeled icon row, and there is no responsive behavior below desktop.
 

@@ -2,6 +2,11 @@
 
 Companion to `01-calendar-assessment.md`.
 
+> **2026-10 redesign update:** token re-point + literal sweep re-themed every
+> calendar chrome automatically (toolbars, pagination, day/week/month pills,
+> connector lines all read CSS vars now). The ✅ items below are unchanged in
+> behavior; only their colors follow the new neutral system.
+
 ## I1 ✅ Brand literals swept (C1)
 `SVGLine` connector gradients re-accented to the teal ramp
 (#0D9488 / #0B7A70 / #5EEAD4).
@@ -29,3 +34,4 @@ Filter pills and Day/Week/Month buttons now render `aria-pressed` and
 ## I6 ⏳ Channel search (C6), keyboard shortcuts (C7)
 Deferred: search needs a new state slice in calendar.context; shortcuts
 need a global keymap to avoid colliding with the editor. Tracked.
+*Not addressed by the redesign — purely behavioral, orthogonal to theming.*

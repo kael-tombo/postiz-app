@@ -1,5 +1,7 @@
 # SocialFlow — UI/UX Assessment: Integrations (Channels)
 
+> **2026-10 redesign update:** the modern-minimal redesign (docs/redesign/plan.md, commit 4e98302f) re-pointed all theme tokens to the neutral zinc/slate system with hairline cards and soft shadows. Per-item resolution status lives in the companion `-improvements.md`.
+
 **Scope:** `launches/add.provider.component.tsx`, `internal.channels.tsx`, `launches.component.tsx` (channel list section), provider redirect flow
 **Verdict:** 6.5/10 — 40+ providers with a working OAuth/redirect flow and per-channel actions (refresh, reconnect, delete), but the provider grid is an undifferentiated wall of logos and unhealthy channels don't demand attention.
 

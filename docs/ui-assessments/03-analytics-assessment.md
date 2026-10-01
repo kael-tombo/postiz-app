@@ -1,5 +1,7 @@
 # SocialFlow — UI/UX Assessment: Analytics
 
+> **2026-10 redesign update:** the modern-minimal redesign (docs/redesign/plan.md, commit 4e98302f) re-pointed all theme tokens to the neutral zinc/slate system with hairline cards and soft shadows. Per-item resolution status lives in the companion `-improvements.md`.
+
 **Scope:** `analytics.component.tsx`, `stars.and.forks.tsx`, `chart.tsx`, `chart-social.tsx`, `stars.table.component.tsx`
 **Verdict:** 5/10 — this page currently reports *repo* analytics (GitHub stars/forks/trending), not social-channel performance; the real per-channel/per-post analytics live behind the Calendar's post menu and integrations. The page mislabels its intent for a social scheduler and leans on commented-out dead layout code.
 

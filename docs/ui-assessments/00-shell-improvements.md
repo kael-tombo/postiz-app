@@ -2,15 +2,22 @@
 
 Companion to `00-shell-assessment.md`. Items marked ✅ are implemented in this round.
 
+> **2026-10 redesign update:** the modern-minimal redesign
+> (`docs/redesign/plan.md`, commit `4e98302f`) re-pointed all theme tokens
+> to the neutral zinc/slate system (hairline borders, `shadow-card` depth,
+> teal as the single accent). Items below reflect the post-redesign state;
+> the two deferred items are *not* resolved by it.
+
 ## I1 ✅ Keyboard focus ring (S1)
 Replaced the blanket `body * { outline: none }` with a `:focus-visible` ring
 (`--new-btn-primary`, 2px, 2px offset) in `global.scss`. Mouse clicks stay
 ring-free; Tab now shows where you are app-wide. This benefits every menu below.
 
 ## I2 ✅ Visible active indicator (S3)
-`menu-item.tsx`: active items render a 3px left-edge bar in the primary color
-plus an inset ring; hover state slightly raises background. Active is now
-recognizable at a glance, not just by tint.
+`menu-item.tsx`: active items render a quiet **whisper-accent pill**
+(`--new-box-focused` surface + accent text/icon) — introduced by the
+redesign, replacing this round's original 3px left-edge bar. Active is
+still recognizable at a glance, now without a hard edge.
 
 ## I3 ✅ Tooltips + aria-labels on top-bar controls (S4, S7)
 `mode.component` (theme toggle), `language.component`, and the extension icon
@@ -23,11 +30,15 @@ Menu item min height raised (54→58px collapsed label mode), label size
 collapse/expand with wider labels deferred (see Non-goals).
 
 ## I5 ✅ Surface elevation (S5)
-Content wrapper gains a subtle border (`--new-border`) + `borderRadius`
-consistency so panels read as surfaces in light mode instead of flat gaps.
+Superseded by the redesign: sidebar (rail 64→68px in an 84px column) and
+content surface are now hairline cards — `--new-border` + `rounded-[16px]`
++ `shadow-card` — and the topbar slimmed 80→64px with an 18px/600 title
+and hairline divider. Panels read as surfaces in both modes.
 
 ## I6 ⏳ Mobile drawer (S6)
 Deferred: needs a layout-level breakpoint refactor. Tracked for a later round.
+*Not addressed by the redesign (which kept the fixed sidebar).*
 
 ## I7 ⏳ Rail collapse/expand toggle
 Deferred with I6 — same breakpoint contract risk.
+*Not addressed by the redesign (which widened the rail slightly, 64→68px, but kept it fixed).*

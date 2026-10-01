@@ -1,5 +1,7 @@
 # SocialFlow — UI/UX Assessment: Agent (AI Chat)
 
+> **2026-10 redesign update:** the modern-minimal redesign (docs/redesign/plan.md, commit 4e98302f) re-pointed all theme tokens to the neutral zinc/slate system with hairline cards and soft shadows. Per-item resolution status lives in the companion `-improvements.md`.
+
 **Scope:** `agents/agent.chat.tsx`, `agents/agent.input.tsx`, `agents/agent.tsx`, `agents/[id]/page.tsx`
 **Verdict:** 6.5/10 — a functional CopilotKit chat with editor integration, but the chat surface has only two theme hooks wired, empty state is bare, and there is no visible conversation management (new/switch threads) inside the chat itself.
 

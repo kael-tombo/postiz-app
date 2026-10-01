@@ -1,5 +1,7 @@
 # SocialFlow — UI/UX Assessment: Plugs (Auto-posting endpoints)
 
+> **2026-10 redesign update:** the modern-minimal redesign (docs/redesign/plan.md, commit 4e98302f) re-pointed all theme tokens to the neutral zinc/slate system with hairline cards and soft shadows. Per-item resolution status lives in the companion `-improvements.md`.
+
 **Scope:** `plugs/plugs.tsx`, `plugs/plug.tsx`, `plugs.context.ts`
 **Verdict:** 6/10 — functional per-channel plug (webhook auto-post) management with enable/disable and secret handling, but it inherits the launches sidebar pattern and gives little guidance about what a "Plug" does on first visit.
 

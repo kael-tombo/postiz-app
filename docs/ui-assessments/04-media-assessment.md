@@ -1,5 +1,7 @@
 # SocialFlow — UI/UX Assessment: Media
 
+> **2026-10 redesign update:** the modern-minimal redesign (docs/redesign/plan.md, commit 4e98302f) re-pointed all theme tokens to the neutral zinc/slate system with hairline cards and soft shadows. Per-item resolution status lives in the companion `-improvements.md`.
+
 **Scope:** `media/media.component.tsx` (999 lines), `new.uploader.tsx` (Uppy), media picker modal, pagination
 **Verdict:** 7/10 — dense but capable: grid + sort, drag-and-drop upload, AI image/video generation entry points, pagination, insert/settings actions. Costs: a 999-line god component, small hit targets in the hover overlay, and no multi-select batch actions.
 
