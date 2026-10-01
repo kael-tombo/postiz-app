@@ -11,6 +11,7 @@ import {
 } from '@stripe/react-stripe-js/checkout';
 import { modeEmitter } from '@gitroom/frontend/components/layout/mode.component';
 import useCookie from 'react-use-cookie';
+import { cssVar } from '@gitroom/react/utils/css.var';
 import { Button } from '@gitroom/react/form/button';
 import dayjs from 'dayjs';
 import { useToaster } from '@gitroom/react/toaster/toaster';
@@ -62,9 +63,11 @@ export const EmbeddedBilling: FC<{
           elementsOptions: {
             appearance: {
               variables: {
-                colorText: mode === 'dark' ? '#ffffff' : '#0e0e0e',
+                // Stripe Elements needs concrete colors (iframe) — resolve the
+                // live tokens; the component re-renders on theme flip.
+                colorText: cssVar('--new-btn-text', '#fafafa'),
                 borderRadius: '8px',
-                colorBackground: mode === 'dark' ? '#1E1E1E' : '#FFFFFF',
+                colorBackground: cssVar('--new-bgColorInner', '#1a1c1f'),
               },
               rules: {
                 '.Label': {
@@ -74,7 +77,7 @@ export const EmbeddedBilling: FC<{
                 },
                 '.Input': {
                   height: '44px',
-                  backgroundColor: mode === 'dark' ? '#1E1E1E' : '#FFFFFF',
+                  backgroundColor: cssVar('--new-bgColorInner', '#1a1c1f'),
                 },
               },
             },

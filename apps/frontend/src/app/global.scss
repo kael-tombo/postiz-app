@@ -59,6 +59,19 @@ button {
     border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+// Reduced motion (ruleset M8): users who opt out of animation get fades or
+// nothing — movement is never the only carrier of meaning.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .box {
   position: relative;
 }
