@@ -34,7 +34,7 @@ noted change) · **REJECT** (not adopted for this product, reason given) ·
 | N5 | Max 2 hierarchy levels | KEEP | Rail → area → panels; deeper content uses modals/tabs (settings tabs, plugs list/detail). | No screen requires 3+ visible nav levels to reach content. |
 | N6 | Icons paired with labels | KEEP | Rail icons have 10px labels; icon-only topbar controls carry aria-label+title (I3). | Hover/tap any icon: label or tooltip appears; screen reader announces it. |
 | N7 | Thumb reach; destructive separated | ADAPT | Destructive separated + confirmed ✓ (media delete M2, deleteDialog). Thumb-reach N/A until mobile exists (pairs with N2). | Delete actions never adjacent to primary CTAs; on mobile, in bottom 2/3 of screen. |
-| N8 | Search + command palette | NEW (adopt) | No search anywhere; 40+ providers need search (add-modal G2 done) but no app-level jump/action palette. Highest-leverage nav gap. | Cmd/Ctrl+K opens palette; jump to any area + run "New Post" from keyboard. |
+| N8 | Search + command palette | NEW ✅ (implemented) | `command-palette.tsx`: Ctrl/Cmd+K opens a keyboard-first launcher — jump to all 8 areas, New post (event bridge to the calendar composer), Add channel, Theme toggle (via `modeEmitter`, now listener-synced). Filter + arrows + Enter; tokens only. Verified live. | Ctrl/Cmd+K opens; type to filter; Enter runs; Esc closes — confirmed in preview. |
 | N9 | Menus grouped, destructive separated | KEEP | Rail splits firstMenu/secondMenu; destructive flows confirm (`delete.dialog`). | Visual grouping check + destructive always confirms with specific wording. |
 | N10 | Nav stable across screens | KEEP | Rail identical everywhere (verified across all area screenshots). | Screenshot diff of rail across areas: identical order/position. |
 
@@ -182,3 +182,4 @@ noted change) · **REJECT** (not adopted for this product, reason given) ·
 - M8: `prefers-reduced-motion` kill-switch in `global.scss`. ✅
 - X1/C2: Stripe billing embed hardcoded grays → `cssVar()` tokens. ✅
 - Shared `cssVar`/`withAlpha` promoted to `@gitroom/react/utils/css.var`. ✅
+- N8: command palette (Ctrl/Cmd+K) — navigation + New post/Add channel/theme actions. ✅

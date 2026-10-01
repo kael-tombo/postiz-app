@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useModals } from '@gitroom/frontend/components/layout/new-modal';
 import dayjs from 'dayjs';
 import { useCalendar } from '@gitroom/frontend/components/launches/calendar.context';
@@ -74,6 +74,22 @@ export const NewPost = () => {
       title: ``,
     });
   }, [integrations, sets]);
+
+  // Command-palette bridge (N8): the palette dispatches 'sf:new-post' (and
+  // sets a pending flag when navigating from another area); consume it here.
+  useEffect(() => {
+    const handler = () => createAPost();
+    window.addEventListener('sf:new-post', handler as EventListener);
+    const pending = window.sessionStorage.getItem('sf-new-post-pending');
+    if (pending === '1') {
+      window.sessionStorage.removeItem('sf-new-post-pending');
+      if (integrations.length > 0) {
+        createAPost();
+      }
+    }
+    return () => window.removeEventListener('sf:new-post', handler as EventListener);
+  }, [createAPost, integrations]);
+
   return (
     <button
       onClick={createAPost}

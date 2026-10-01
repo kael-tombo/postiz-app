@@ -18,6 +18,16 @@ const ModeComponent = () => {
     document.body.classList.remove('dark', 'light');
     document.body.classList.add(mode);
   }, [mode]);
+
+  // External mode flips (command palette) keep cookie + body class in sync
+  // through the same bus; own emits re-set the same value harmlessly.
+  useEffect(() => {
+    const handler = (value: string) => setMode(value as 'dark' | 'light');
+    modeEmitter.on('mode', handler);
+    return () => {
+      modeEmitter.off('mode', handler);
+    };
+  }, [setMode]);
   return (
     <div
       onClick={changeMode}
